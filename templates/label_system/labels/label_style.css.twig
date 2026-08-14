@@ -1,5 +1,27 @@
 @page {
-    margin: 12px 6px;
+    margin: 0;
+}
+
+.sheet-page {
+    position: relative;
+    width: {{ options.paperWidth }}{{ options.cssUnit }};
+    height: {{ options.paperHeight }}{{ options.cssUnit }};
+    page-break-after: always;
+    overflow: hidden;
+}
+
+.sheet-page:last-of-type { page-break-after: avoid; }
+
+.sheet-label {
+    position: absolute;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 12px 6px;
+    border-radius: {{ options.stickerCornerRadius }}{{ options.cssUnit }};
+}
+
+.sheet-label .page-inner {
+    position: relative;
 }
 
 .page {
@@ -36,6 +58,7 @@
 }
 
 body {
+    margin: 0;
     font-family: "DejaVu Sans Mono", "unifont", monospace;
     font-size: 12px;
     line-height: 1.0;
@@ -66,7 +89,7 @@ hr {
     display: inline-block;
     align-content: center;
     text-align: left;
-    position: fixed;
+    position: absolute;
     bottom: 32px;
 }
 

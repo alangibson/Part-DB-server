@@ -28,6 +28,7 @@ use App\Entity\LogSystem\LogTargetType;
 use App\Entity\Parameters\PartParameter;
 use App\Entity\Parts\Category;
 use App\Entity\UserSystem\User;
+use App\Entity\LabelSystem\LabelSheet;
 use PHPUnit\Framework\TestCase;
 
 final class LogTargetTypeTest extends TestCase
@@ -54,6 +55,7 @@ final class LogTargetTypeTest extends TestCase
         //Test creation from subclass
         $this->assertSame(LogTargetType::ATTACHMENT, LogTargetType::fromElementClass(new PartAttachment()));
         $this->assertSame(LogTargetType::PARAMETER, LogTargetType::fromElementClass(new PartParameter()));
+        $this->assertSame(LogTargetType::LABEL_SHEET, LogTargetType::fromElementClass(new LabelSheet()));
     }
 
     public function testFromElementClassInvalid(): void

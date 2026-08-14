@@ -220,9 +220,15 @@ abstract class BaseAdminController extends AbstractController
             $example = $this->barcodeExampleGenerator->getElement($entity->getOptions()->getSupportedElement());
             $pdf_data = null;
             try {
-                $pdf_data = $this->labelGenerator->generateLabel($entity->getOptions(), $example);
+                $pdf_data = $this->labelGenerator->generateLabel(
+                    $entity->getOptions(),
+                    $example,
+                    copies: $entity->getOptions()->getSheetCapacity(),
+                );
             } catch (TwigModeException $exception) {
                 $form->get('options')->get('lines')->addError(new FormError($exception->getSafeMessage()));
+            } catch (InvalidArgumentException $exception) {
+                $form->get('options')->addError(new FormError($exception->getMessage()));
             }
         }
 

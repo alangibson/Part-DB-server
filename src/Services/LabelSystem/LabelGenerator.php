@@ -60,7 +60,7 @@ final class LabelGenerator
     /**
      * @param  object|object[]  $elements  An element or an array of elements for which labels should be generated
      */
-    public function generateLabel(LabelOptions $options, object|array $elements): string
+    public function generateLabel(LabelOptions $options, object|array $elements, int $copies = 1, int $startSlot = 1): string
     {
         if (!is_array($elements)) {
             $elements = [$elements];
@@ -72,12 +72,39 @@ final class LabelGenerator
             }
         }
 
+        if ($copies < 1) {
+            throw new InvalidArgumentException('The number of copies must be at least one.');
+        }
+
+        $this->validateSheetLayout($options, $startSlot);
+
         $dompdf = $this->dompdfFactory->create();
-        $dompdf->setPaper($this->mmToPointsArray($options->getWidth(), $options->getHeight()));
-        $dompdf->loadHtml($this->labelHTMLGenerator->getLabelHTML($options, $elements));
+        $dompdf->setPaper($this->mmToPointsArray(
+            $options->toMillimeters($options->getPaperWidth()),
+            $options->toMillimeters($options->getPaperHeight()),
+        ));
+        $dompdf->loadHtml($this->labelHTMLGenerator->getLabelHTML($options, $elements, $copies, $startSlot));
         $dompdf->render();
 
         return $dompdf->output() ?? throw new \RuntimeException('Could not generate label!');
+    }
+
+    private function validateSheetLayout(LabelOptions $options, int $startSlot): void
+    {
+        if ($startSlot < 1 || $startSlot > $options->getSheetCapacity()) {
+            throw new InvalidArgumentException('The starting position must be within the first label sheet.');
+        }
+        $horizontalStride = $options->getWidth() + $options->getSheetGutterWidth();
+        $verticalStride = $options->getHeight() + $options->getSheetGutterHeight();
+        $right = $options->getSheetMarginLeft()
+            + (($options->getSheetColumns() - 1) * $horizontalStride)
+            + $options->getWidth();
+        $bottom = $options->getSheetMarginTop()
+            + (($options->getSheetRows() - 1) * $verticalStride)
+            + $options->getHeight();
+        if ($right > $options->getPaperWidth() + 0.01 || $bottom > $options->getPaperHeight() + 0.01) {
+            throw new InvalidArgumentException('The configured label grid does not fit on the sheet.');
+        }
     }
 
     /**

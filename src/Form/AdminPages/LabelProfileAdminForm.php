@@ -43,9 +43,13 @@ namespace App\Form\AdminPages;
 
 use App\Entity\Base\AbstractNamedDBElement;
 use App\Entity\LabelSystem\LabelProfile;
+use App\Entity\LabelSystem\LabelSheet;
 use App\Form\LabelOptionsType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LabelProfileAdminForm extends BaseEntityAdminForm
@@ -63,9 +67,32 @@ class LabelProfileAdminForm extends BaseEntityAdminForm
             'required' => false,
             'label' => 'label_profile.showInDropdown',
         ]);
+        $builder->add('label_sheet', EntityType::class, [
+            'class' => LabelSheet::class,
+            'choice_label' => 'name',
+            'choice_attr' => static fn(LabelSheet $sheet): array => [
+                'data-label-width' => (string) $sheet->getLabelWidth(),
+                'data-label-height' => (string) $sheet->getLabelHeight(),
+            ],
+            'label' => 'label_profile.sheet.label',
+            'placeholder' => 'label_profile.sheet.default',
+            'required' => false,
+            'disabled' => $options['disable_options'],
+            'attr' => [
+                'data-action' => 'change->pages--label-profile-sheet#toggle',
+                'data-pages--label-profile-sheet-target' => 'sheet',
+            ],
+        ]);
         $builder->add('options', LabelOptionsType::class, [
             'label' => false,
             'disabled' => $options['disable_options'],
         ]);
+        $builder->addEventListener(FormEvents::POST_SUBMIT, static function (FormEvent $event): void {
+            $profile = $event->getData();
+            $sheet = $profile instanceof LabelProfile ? $profile->getLabelSheet() : null;
+            if ($profile instanceof LabelProfile && $sheet instanceof LabelSheet) {
+                $profile->getOptions()->applyLabelSheet($sheet);
+            }
+        });
     }
 }

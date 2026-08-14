@@ -127,6 +127,7 @@ class LabelController extends AbstractController
                 $new_profile = new LabelProfile();
                 $new_profile->setName($form->get('save_profile_name')->getData());
                 $new_profile->setOptions($form_options);
+                $new_profile->setLabelSheet($profile?->getLabelSheet());
 
                 //Validate the profile name
                 $errors = $this->validator->validate($new_profile);
@@ -184,10 +185,17 @@ class LabelController extends AbstractController
 
             if ($targets !== []) {
                 try {
-                    $pdf_data = $this->labelGenerator->generateLabel($form_options, $targets);
+                    $pdf_data = $this->labelGenerator->generateLabel(
+                        $form_options,
+                        $targets,
+                        (int) $form->get('copies')->getData(),
+                        (int) $form->get('start_slot')->getData(),
+                    );
                     $filename = $this->getLabelName($targets[0], $profile);
                 } catch (TwigModeException $exception) {
                     $form->get('options')->get('lines')->addError(new FormError($exception->getSafeMessage()));
+                } catch (\InvalidArgumentException $exception) {
+                    $form->get('options')->addError(new FormError($exception->getMessage()));
                 }
             } else {
                 //$this->addFlash('warning', 'label_generator.no_entities_found');

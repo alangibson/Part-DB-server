@@ -14261,5 +14261,35 @@ Buerklin-API Authentication server:
         <target>OAuth2 client updated successfully!</target>
       </segment>
     </unit>
+    <unit id="label_sheet_layout" name="label_options.sheet_layout.label"><segment state="translated"><source>label_options.sheet_layout.label</source><target>Label sheet layout</target></segment></unit>
+    <unit id="label_profile_label_tab" name="label_profile.label_tab"><segment state="translated"><source>label_profile.label_tab</source><target>Label</target></segment></unit>
+    <unit id="label_profile_sheet_tab" name="label_profile.sheet_tab"><segment state="translated"><source>label_profile.sheet_tab</source><target>Sheet</target></segment></unit>
+    <unit id="label_sheet_width" name="label_options.sheet_width.label"><segment state="translated"><source>label_options.sheet_width.label</source><target>Sheet width</target></segment></unit>
+    <unit id="label_sheet_height" name="label_options.sheet_height.label"><segment state="translated"><source>label_options.sheet_height.label</source><target>Sheet height</target></segment></unit>
+    <unit id="label_sheet_left" name="label_options.sheet_margin_left.label"><segment state="translated"><source>label_options.sheet_margin_left.label</source><target>Left margin</target></segment></unit>
+    <unit id="label_sheet_top" name="label_options.sheet_margin_top.label"><segment state="translated"><source>label_options.sheet_margin_top.label</source><target>Top margin</target></segment></unit>
+    <unit id="label_sheet_gutter_width" name="label_options.sheet_gutter_width.label"><segment state="translated"><source>label_options.sheet_gutter_width.label</source><target>Gutter width</target></segment></unit>
+    <unit id="label_sheet_gutter_height" name="label_options.sheet_gutter_height.label"><segment state="translated"><source>label_options.sheet_gutter_height.label</source><target>Gutter height</target></segment></unit>
+    <unit id="label_sheet_columns" name="label_options.sheet_columns.label"><segment state="translated"><source>label_options.sheet_columns.label</source><target>Columns</target></segment></unit>
+    <unit id="label_sheet_rows" name="label_options.sheet_rows.label"><segment state="translated"><source>label_options.sheet_rows.label</source><target>Rows</target></segment></unit>
+    <unit id="label_sheet_size" name="label_options.sheet_size.label"><segment state="translated"><source>label_options.sheet_size.label</source><target>Sheet size</target></segment></unit>
+    <unit id="label_grid_size" name="label_options.grid_size.label"><segment state="translated"><source>label_options.grid_size.label</source><target>Columns × rows</target></segment></unit>
+    <unit id="label_unit" name="label_options.unit.label"><segment state="translated"><source>label_options.unit.label</source><target>Unit</target></segment></unit>
+    <unit id="label_unit_mm" name="label_options.unit.mm"><segment state="translated"><source>label_options.unit.mm</source><target>Millimetres</target></segment></unit>
+    <unit id="label_unit_inch" name="label_options.unit.inch"><segment state="translated"><source>label_options.unit.inch</source><target>Inches</target></segment></unit>
+    <unit id="label_page_size_name" name="label_options.page_size_name.label"><segment state="translated"><source>label_options.page_size_name.label</source><target>Page size</target></segment></unit>
+    <unit id="label_corner_radius" name="label_options.sticker_corner_radius.label"><segment state="translated"><source>label_options.sticker_corner_radius.label</source><target>Sticker corner radius</target></segment></unit>
+    <unit id="label_copies" name="label_generator.copies.label"><segment state="translated"><source>label_generator.copies.label</source><target>Copies per item</target></segment></unit>
+    <unit id="label_start_slot" name="label_generator.start_slot.label"><segment state="translated"><source>label_generator.start_slot.label</source><target>First sheet position</target></segment></unit>
+    <unit id="label_start_slot_help" name="label_generator.start_slot.help"><segment state="translated"><source>label_generator.start_slot.help</source><target>One-based position used to skip labels on a partially used first sheet.</target></segment></unit>
+    <unit id="label_sheet_plural" name="label_sheet.labelp"><segment state="translated"><source>label_sheet.labelp</source><target>Label Sheets</target></segment></unit>
+    <unit id="label_sheet_singular" name="label_sheet.label"><segment state="translated"><source>label_sheet.label</source><target>Label Sheet</target></segment></unit>
+    <unit id="label_sheet_new" name="label_sheet.new"><segment state="translated"><source>label_sheet.new</source><target>New Label Sheet</target></segment></unit>
+    <unit id="label_sheet_edit" name="label_sheet.edit"><segment state="translated"><source>label_sheet.edit</source><target>Edit Label Sheet</target></segment></unit>
+    <unit id="label_sheet_none" name="label_sheet.none"><segment state="translated"><source>label_sheet.none</source><target>No label sheets have been defined.</target></segment></unit>
+    <unit id="label_profile_sheet" name="label_profile.sheet.label"><segment state="translated"><source>label_profile.sheet.label</source><target>Label Sheet</target></segment></unit>
+    <unit id="label_profile_sheet_placeholder" name="label_profile.sheet.placeholder"><segment state="translated"><source>label_profile.sheet.placeholder</source><target>Select a Label Sheet</target></segment></unit>
+    <unit id="label_profile_sheet_default" name="label_profile.sheet.default"><segment state="translated"><source>label_profile.sheet.default</source><target>Default</target></segment></unit>
+    <unit id="label_sheet_delete_in_use" name="label_sheet.delete.in_use"><segment state="translated"><source>label_sheet.delete.in_use</source><target>This Label Sheet cannot be deleted because it is used by one or more Label Profiles.</target></segment></unit>
   </file>
 </xliff>

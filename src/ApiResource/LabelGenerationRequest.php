@@ -81,4 +81,12 @@ class LabelGenerationRequest
      * @var LabelSupportedElement|null Optional: Override the element type. If not provided, uses profile's default.
      */
     public ?LabelSupportedElement $elementType = null;
+
+    /** Number of labels to generate for each element. */
+    #[Assert\Range(min: 1, max: 1000)]
+    public int $copies = 1;
+
+    /** One-based position of the first label on the first sheet. Ignored for single-label output. */
+    #[Assert\Positive]
+    public int $startSlot = 1;
 }

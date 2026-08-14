@@ -103,6 +103,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     'measurement_unit' => MeasurementUnit::class,
     'parameter' => AbstractParameter::class,
     'supplier' => Supplier::class,
+    'label_sheet' => \App\Entity\LabelSystem\LabelSheet::class,
     'user' => User::class]
 )]
 #[ORM\MappedSuperclass(repositoryClass: DBElementRepository::class)]

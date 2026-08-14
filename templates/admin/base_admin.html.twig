@@ -80,7 +80,7 @@
                                 {% block nav_pills_container %}
                                     <ul class="nav nav-pills mb-2">
                                         <li class="nav-item">
-                                            <a data-bs-toggle="tab" class="nav-link link-anchor active" href="#common">{% trans %}admin.common{% endtrans %}</a>
+                                            <a data-bs-toggle="tab" class="nav-link link-anchor active" href="#common">{% block common_tab_label %}{% trans %}admin.common{% endtrans %}{% endblock %}</a>
                                         </li>
                                         {% block additional_pills %}{% endblock %}
                                         <li class="nav-item">

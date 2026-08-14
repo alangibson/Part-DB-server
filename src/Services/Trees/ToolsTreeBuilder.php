@@ -75,7 +75,7 @@ class ToolsTreeBuilder
      */
     public function getTree(): array
     {
-        $key = 'tree_tools_'.$this->keyGenerator->generateKey();
+        $key = 'tree_tools_v2_'.$this->keyGenerator->generateKey();
 
         return $this->cache->get($key, function (ItemInterface $item) {
             //Invalidate tree, whenever group or the user changes
@@ -235,7 +235,11 @@ class ToolsTreeBuilder
         if ($this->security->isGranted('read', new LabelProfile())) {
             $nodes[] = (new TreeViewNode(
                 $this->elementTypeNameGenerator->typeLabelPlural(LabelProfile::class),
-                $this->urlGenerator->generate('label_profile_new')
+                $this->urlGenerator->generate('label_profile_new'),
+                [new TreeViewNode(
+                    $this->translator->trans('label_sheet.labelp'),
+                    $this->urlGenerator->generate('label_sheet_new')
+                )]
             ))->setIcon('fa-fw fa-treeview fa-solid fa-qrcode');
         }
         if ($this->security->isGranted('read', new PartCustomState())) {

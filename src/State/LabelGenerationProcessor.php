@@ -109,7 +109,7 @@ class LabelGenerationProcessor implements ProcessorInterface
 
         // Generate the PDF
         try {
-            $pdfContent = $this->labelGenerator->generateLabel($options, $elements);
+            $pdfContent = $this->labelGenerator->generateLabel($options, $elements, $request->copies, $request->startSlot);
         } catch (\Exception $e) {
             throw new BadRequestHttpException('Failed to generate label: ' . $e->getMessage());
         }
