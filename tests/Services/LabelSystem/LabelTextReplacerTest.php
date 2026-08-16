@@ -93,6 +93,8 @@ final class LabelTextReplacerTest extends WebTestCase
         yield ["[[NAME\n]] [[NAME ]]", "[[NAME\n]] [[NAME ]]"];
         yield ['[[]]', '[[]]'];
         yield ['TEST[[ ]]TEST', 'TEST[[ ]]TEST'];
+        yield ['', "[[parameters['Missing']]]"];
+        yield ['', "[[RESISTOR_4_BAND(PARAMETERS['Missing'])]]"];
     }
 
     #[DataProvider('handlePlaceholderDataProvider')]

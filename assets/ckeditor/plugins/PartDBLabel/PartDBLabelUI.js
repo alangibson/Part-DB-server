@@ -54,7 +54,16 @@ export default class PartDBLabelUI extends Plugin {
 
             // Execute the command when the dropdown item is clicked (executed).
             this.listenTo( dropdownView, 'execute', evt => {
-                editor.execute( 'partdb_label', { value: evt.source.commandParam } );
+                const value = evt.source.commandParam;
+
+                if (value.includes("PARAMETERS['...']")) {
+                    editor.model.change(writer => {
+                        editor.model.insertContent(writer.createText(value));
+                    });
+                } else {
+                    editor.execute( 'partdb_label', { value } );
+                }
+
                 editor.editing.view.focus();
             } );
 
@@ -89,6 +98,7 @@ const PLACEHOLDERS = [
             ['[[IPN_BARCODE_QR]]', 'IPN as QR code'],
             ['[[IPN_BARCODE_C128]]', 'IPN as Code 128 barcode'],
             ['[[IPN_BARCODE_C39]]', 'IPN as Code 39 barcode'],
+            ["[[PARAMETERS['...']]]", 'Parameter by name'],
         ]
     },
     {
@@ -103,6 +113,8 @@ const PLACEHOLDERS = [
             ['[[LOCATION_FULL]]', 'Storage location (Full path)'],
             ['[[OWNER]]', 'Full name of the lot owner'],
             ['[[OWNER_USERNAME]]', 'Username of the lot owner'],
+            ["[[PART.PARAMETERS['...']]]", 'Part parameter by name'],
+            ["[[STORAGE_LOCATION.PARAMETERS['...']]]", 'Storage location parameter by name'],
         ]
     },
     {
@@ -119,6 +131,7 @@ const PLACEHOLDERS = [
             ['[[CREATION_DATE]]', 'Creation datetime'],
             ['[[OWNER]]', 'Full name of the location owner'],
             ['[[OWNER_USERNAME]]', 'Username of the location owner'],
+            ["[[PARAMETERS['...']]]", 'Parameter by name'],
         ]
     },
     {
@@ -131,6 +144,10 @@ const PLACEHOLDERS = [
             ['[[BARCODE_C39]]', 'Code 39 barcode linking to this element'],
             ['[[BARCODE_C93]]', 'Code 93 barcode linking to this element'],
             ['[[BARCODE_DATAMATRIX]]', 'Datamatrix code linking to this element'],
+            ["[[RESISTOR_4_BAND(PARAMETERS['Resistance'])]]", '4-band resistor color code'],
+            ["[[RESISTOR_4_BAND(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '4-band resistor color code with tolerance'],
+            ["[[RESISTOR_5_BAND(PARAMETERS['Resistance'])]]", '5-band resistor color code'],
+            ["[[RESISTOR_5_BAND(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '5-band resistor color code with tolerance'],
         ]
     },
     {
