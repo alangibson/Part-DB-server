@@ -80,9 +80,11 @@ final class LabelGenerator
         $this->validateSheetLayout($options, $startSlot);
 
         $dompdf = $this->dompdfFactory->create();
-        $dompdf->setPaper($this->mmToPointsArray($options->getWidth(), $options->getHeight()));
-        $html = $this->labelHTMLGenerator->getLabelHTML($options, $elements);
-        $dompdf->loadHtml($this->tableColumnWidthNormalizer->normalize($html));
+        $dompdf->setPaper($this->mmToPointsArray(
+            $options->toMillimeters($options->getPaperWidth()),
+            $options->toMillimeters($options->getPaperHeight()),
+        ));
+        $dompdf->loadHtml($this->labelHTMLGenerator->getLabelHTML($options, $elements, $copies, $startSlot));
         $dompdf->render();
 
         return $dompdf->output() ?? throw new \RuntimeException('Could not generate label!');
