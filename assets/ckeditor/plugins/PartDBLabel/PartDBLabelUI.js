@@ -56,7 +56,7 @@ export default class PartDBLabelUI extends Plugin {
             this.listenTo( dropdownView, 'execute', evt => {
                 const value = evt.source.commandParam;
 
-                if (value.includes("PARAMETERS['...']")) {
+                if (value.includes('PARAMETERS[')) {
                     editor.model.change(writer => {
                         editor.model.insertContent(writer.createText(value));
                     });
@@ -148,6 +148,12 @@ const PLACEHOLDERS = [
             ["[[RESISTOR_4_BAND(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '4-band resistor color code with tolerance'],
             ["[[RESISTOR_5_BAND(PARAMETERS['Resistance'])]]", '5-band resistor color code'],
             ["[[RESISTOR_5_BAND(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '5-band resistor color code with tolerance'],
+            ["[[RESISTOR_EIA_3(PARAMETERS['Resistance'])]]", '3-digit SMD resistor code'],
+            ["[[RESISTOR_EIA_3(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '3-digit SMD resistor code with tolerance'],
+            ["[[RESISTOR_EIA_4(PARAMETERS['Resistance'])]]", '4-digit SMD resistor code'],
+            ["[[RESISTOR_EIA_4(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '4-digit SMD resistor code with tolerance'],
+            ["[[RESISTOR_EIA_96(PARAMETERS['Resistance'])]]", 'EIA-96 SMD resistor code'],
+            ["[[RESISTOR_EIA_96(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", 'EIA-96 SMD resistor code with tolerance validation'],
         ]
     },
     {
