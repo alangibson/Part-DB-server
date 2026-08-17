@@ -51,6 +51,7 @@ import {Table} from 'ckeditor5';
 import {TableCaption} from 'ckeditor5';
 import {TableCellProperties} from 'ckeditor5';
 import {TableColumnResize} from 'ckeditor5';
+import {TableLayout} from 'ckeditor5';
 import {TableProperties} from 'ckeditor5';
 import {TableToolbar} from 'ckeditor5';
 import {Underline} from 'ckeditor5';
@@ -114,6 +115,7 @@ Editor.builtinPlugins = [
     TableCaption,
     TableCellProperties,
     TableColumnResize,
+    TableLayout,
     TableProperties,
     TableToolbar,
     Underline,
@@ -156,6 +158,7 @@ Editor.defaultConfig = {
             'imageUpload',
             'blockQuote',
             'insertTable',
+            'insertTableLayout',
             'mediaEmbed',
             'code',
             'codeBlock',
