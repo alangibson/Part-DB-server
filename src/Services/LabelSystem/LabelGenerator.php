@@ -53,6 +53,7 @@ final class LabelGenerator
     public const MM_TO_POINTS_FACTOR = 2.83465;
 
     public function __construct(private readonly LabelHTMLGenerator $labelHTMLGenerator,
+        private readonly LabelTableColumnWidthNormalizer $tableColumnWidthNormalizer,
         private readonly DompdfFactoryInterface $dompdfFactory)
     {
     }
@@ -74,7 +75,8 @@ final class LabelGenerator
 
         $dompdf = $this->dompdfFactory->create();
         $dompdf->setPaper($this->mmToPointsArray($options->getWidth(), $options->getHeight()));
-        $dompdf->loadHtml($this->labelHTMLGenerator->getLabelHTML($options, $elements));
+        $html = $this->labelHTMLGenerator->getLabelHTML($options, $elements);
+        $dompdf->loadHtml($this->tableColumnWidthNormalizer->normalize($html));
         $dompdf->render();
 
         return $dompdf->output() ?? throw new \RuntimeException('Could not generate label!');
