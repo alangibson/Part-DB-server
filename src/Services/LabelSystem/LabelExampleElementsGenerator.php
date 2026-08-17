@@ -43,6 +43,7 @@ namespace App\Services\LabelSystem;
 
 use App\Entity\Base\AbstractStructuralDBElement;
 use App\Entity\LabelSystem\LabelSupportedElement;
+use App\Entity\Parameters\PartParameter;
 use App\Entity\Parts\Category;
 use App\Entity\Parts\Footprint;
 use App\Entity\Parts\Manufacturer;
@@ -87,7 +88,21 @@ final class LabelExampleElementsGenerator
         $part->setMinAmount(100);
         $part->setNeedsReview(true);
 
+        $part->addParameter($this->createPartParameter('Resistance', 100, 'kΩ'));
+        $part->addParameter($this->createPartParameter('Power', 0.5, 'W'));
+        $part->addParameter($this->createPartParameter('Tolerance', 1, '%'));
+
         return $part;
+    }
+
+    private function createPartParameter(string $name, float $value, string $unit): PartParameter
+    {
+        $parameter = new PartParameter();
+        $parameter->setName($name);
+        $parameter->setValueTypical($value);
+        $parameter->setUnit($unit);
+
+        return $parameter;
     }
 
     public function getExamplePartLot(): PartLot
