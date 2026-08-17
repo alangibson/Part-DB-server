@@ -47,6 +47,7 @@ use App\Validator\Constraints\Misc\ValidRange;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -65,6 +66,20 @@ class LabelDialogType extends AbstractType
             'constraints' => [
                 new ValidRange(),
             ],
+        ]);
+
+        $builder->add('copies', IntegerType::class, [
+            'label' => 'label_generator.copies.label',
+            'data' => 1,
+            'constraints' => [new \Symfony\Component\Validator\Constraints\Range(min: 1, max: 1000)],
+            'attr' => ['min' => 1, 'max' => 1000],
+        ]);
+        $builder->add('start_slot', IntegerType::class, [
+            'label' => 'label_generator.start_slot.label',
+            'help' => 'label_generator.start_slot.help',
+            'data' => 1,
+            'constraints' => [new \Symfony\Component\Validator\Constraints\Positive()],
+            'attr' => ['min' => 1],
         ]);
 
         $builder->add('options', LabelOptionsType::class, [

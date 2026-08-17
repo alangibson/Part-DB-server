@@ -28,6 +28,7 @@ use App\Entity\Attachments\AttachmentType;
 use App\Entity\InfoProviderSystem\BulkInfoProviderImportJob;
 use App\Entity\InfoProviderSystem\BulkInfoProviderImportJobPart;
 use App\Entity\LabelSystem\LabelProfile;
+use App\Entity\LabelSystem\LabelSheet;
 use App\Entity\Parameters\AbstractParameter;
 use App\Entity\Parts\Category;
 use App\Entity\Parts\Footprint;
@@ -71,6 +72,7 @@ enum ElementTypes: string implements TranslatableInterface
     case USER = "user";
     case PARAMETER = "parameter";
     case LABEL_PROFILE = "label_profile";
+    case LABEL_SHEET = "label_sheet";
     case PART_ASSOCIATION = "part_association";
     case BULK_INFO_PROVIDER_IMPORT_JOB = "bulk_info_provider_import_job";
     case BULK_INFO_PROVIDER_IMPORT_JOB_PART = "bulk_info_provider_import_job_part";
@@ -97,6 +99,7 @@ enum ElementTypes: string implements TranslatableInterface
         User::class => self::USER,
         AbstractParameter::class => self::PARAMETER,
         LabelProfile::class => self::LABEL_PROFILE,
+        LabelSheet::class => self::LABEL_SHEET,
         PartAssociation::class => self::PART_ASSOCIATION,
         BulkInfoProviderImportJob::class => self::BULK_INFO_PROVIDER_IMPORT_JOB,
         BulkInfoProviderImportJobPart::class => self::BULK_INFO_PROVIDER_IMPORT_JOB_PART,
@@ -128,6 +131,7 @@ enum ElementTypes: string implements TranslatableInterface
             self::USER => 'user.label',
             self::PARAMETER => 'parameter.label',
             self::LABEL_PROFILE => 'label_profile.label',
+            self::LABEL_SHEET => 'label_sheet.label',
             self::PART_ASSOCIATION => 'part_association.label',
             self::BULK_INFO_PROVIDER_IMPORT_JOB => 'bulk_info_provider_import_job.label',
             self::BULK_INFO_PROVIDER_IMPORT_JOB_PART => 'bulk_info_provider_import_job_part.label',
@@ -157,6 +161,7 @@ enum ElementTypes: string implements TranslatableInterface
             self::USER => 'user.labelp',
             self::PARAMETER => 'parameter.labelp',
             self::LABEL_PROFILE => 'label_profile.labelp',
+            self::LABEL_SHEET => 'label_sheet.labelp',
             self::PART_ASSOCIATION => 'part_association.labelp',
             self::BULK_INFO_PROVIDER_IMPORT_JOB => 'bulk_info_provider_import_job.labelp',
             self::BULK_INFO_PROVIDER_IMPORT_JOB_PART => 'bulk_info_provider_import_job_part.labelp',

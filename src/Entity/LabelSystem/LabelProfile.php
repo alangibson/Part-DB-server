@@ -105,6 +105,11 @@ class LabelProfile extends AttachmentContainingDBElement
     #[Groups(["extended", "full", "import", "label_profile:read"])]
     protected LabelOptions $options;
 
+    #[ORM\ManyToOne(targetEntity: LabelSheet::class)]
+    #[ORM\JoinColumn(name: 'label_sheet_id', nullable: true)]
+    #[Groups(["extended", "full", "import", "label_profile:read"])]
+    protected ?LabelSheet $label_sheet = null;
+
     /**
      * @var string The comment info for this element
      */
@@ -128,7 +133,28 @@ class LabelProfile extends AttachmentContainingDBElement
 
     public function getOptions(): LabelOptions
     {
+        if ($this->label_sheet instanceof LabelSheet) {
+            $this->options->applyLabelSheet($this->label_sheet);
+        } else {
+            $this->options->applyDefaultLabelSheet();
+        }
+
         return $this->options;
+    }
+
+    public function getLabelSheet(): ?LabelSheet
+    {
+        return $this->label_sheet;
+    }
+
+    public function setLabelSheet(?LabelSheet $labelSheet): self
+    {
+        $this->label_sheet = $labelSheet;
+        if ($labelSheet instanceof LabelSheet) {
+            $this->options->applyLabelSheet($labelSheet);
+        }
+
+        return $this;
     }
 
     public function setOptions(LabelOptions $labelOptions): self

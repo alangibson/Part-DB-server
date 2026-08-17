@@ -25,6 +25,7 @@
     "license": "AGPL-3.0-or-later",
     "private": true,
     "scripts": {
+        "test": "node --test tests/JavaScript/*.test.mjs",
         "dev-server": "encore dev-server",
         "dev": "encore dev",
         "watch": "encore dev --watch",

@@ -30,6 +30,7 @@ use App\Entity\Parameters\PartParameter;
 use App\Entity\Parts\PartCustomState;
 use App\Entity\ProjectSystem\Project;
 use App\Entity\LabelSystem\LabelProfile;
+use App\Entity\LabelSystem\LabelSheet;
 use App\Entity\Parts\Category;
 use App\Entity\Parts\Footprint;
 use App\Entity\Parts\Manufacturer;
@@ -108,6 +109,7 @@ class EntityURLGenerator
             MeasurementUnit::class => 'measurement_unit_edit',
             Group::class => 'group_edit',
             LabelProfile::class => 'label_profile_edit',
+            LabelSheet::class => 'label_sheet_edit',
             PartCustomState::class => 'part_custom_state_edit',
         ];
 
@@ -278,6 +280,7 @@ class EntityURLGenerator
             MeasurementUnit::class => 'measurement_unit_new',
             Group::class => 'group_new',
             LabelProfile::class => 'label_profile_new',
+            LabelSheet::class => 'label_sheet_new',
             PartCustomState::class => 'part_custom_state_new',
         ];
 

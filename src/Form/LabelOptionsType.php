@@ -62,24 +62,28 @@ class LabelOptionsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('width', NumberType::class, [
+        if ($options['include_label_size']) {
+            $builder->add('width', NumberType::class, [
             'label' => 'label_options.page_size.label',
             'html5' => true,
             'attr' => [
                 'placeholder' => 'label_options.width.placeholder',
                 'min' => 0,
                 'step' => 'any',
+                'data-pages--label-profile-sheet-target' => 'labelWidth',
             ],
-        ]);
-        $builder->add('height', NumberType::class, [
+            ]);
+            $builder->add('height', NumberType::class, [
             'label' => false,
             'html5' => true,
             'attr' => [
                 'placeholder' => 'label_options.height.placeholder',
                 'min' => 0,
                 'step' => 'any',
+                'data-pages--label-profile-sheet-target' => 'labelHeight',
             ],
-        ]);
+            ]);
+        }
 
         $builder->add('supported_element', EnumType::class, [
             'label' => 'label_options.supported_elements.label',
@@ -157,5 +161,7 @@ class LabelOptionsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('data_class', LabelOptions::class);
+        $resolver->setDefault('include_label_size', true);
+        $resolver->setAllowedTypes('include_label_size', 'bool');
     }
 }

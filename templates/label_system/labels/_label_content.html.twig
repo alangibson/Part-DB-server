@@ -1,0 +1,7 @@
+{% if options.barcodeType.none %}
+    {% include "label_system/labels/label_page_none.html.twig" %}
+{% elseif options.barcodeType.is2D() %}
+    {% include "label_system/labels/label_page_qr.html.twig" %}
+{% elseif options.barcodeType.is1D() %}
+    {% include "label_system/labels/label_page_1d.html.twig" %}
+{% endif %}

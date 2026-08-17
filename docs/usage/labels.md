@@ -12,6 +12,21 @@ You can use the "Tools -> Label generator" menu entry to create labels or click 
 You can define label templates by creating label profiles. This way you can create many similar-looking labels for
 many parts.
 
+## Single labels and label sheets
+
+Every label profile defines a sheet and a grid. For roll, thermal, and other dedicated label printers, define a sheet with
+the physical page size of the printer media and a one-row, one-column grid.
+
+For products such as Avery-style adhesive sheets, enter the paper size, top and left margins, row and column count, and
+horizontal and vertical gutters on the **Sheet** tab. A gutter is the empty space between adjacent labels.
+Dimensions can be entered in millimetres or inches. Named A4 and Letter page sizes supply the physical paper dimensions;
+choose Custom to enter them manually. The sticker corner radius controls clipping and rounded label boundaries.
+
+When generating a sheet, **Copies per item** repeats each selected item. **First sheet position** skips already-used labels
+on the first page (positions are counted from left to right and then top to bottom). Print the resulting PDF at 100% or
+"Actual size" and disable "Fit to page". Printer feed tolerances vary, so test a layout on plain paper before using label
+stock and adjust the top and left margins if necessary.
+
 The content of the labels is defined by the template's content field. You can use the WYSIWYG editor to create and style
 the content (or write HTML code).
 Using the "Label placeholder" menu in the editor, you can insert placeholders for the data of the parts.
