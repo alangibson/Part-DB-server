@@ -123,6 +123,60 @@ final class ResistorColorCodeProviderTest extends TestCase
         );
     }
 
+    public function testThreeDigitSmdCodes(): void
+    {
+        self::assertSame('103', $this->renderCode("RESISTOR_EIA_3('10000')"));
+        self::assertSame('103J', $this->renderCode("RESISTOR_EIA_3('10000', '5%')"));
+        self::assertSame('472J', $this->renderCode("RESISTOR_EIA_3('4700', '5%')"));
+        self::assertSame('560J', $this->renderCode("RESISTOR_EIA_3('56', '5%')"));
+        self::assertSame('4R7J', $this->renderCode("RESISTOR_EIA_3('4.7', '5%')"));
+        self::assertSame('R22J', $this->renderCode("RESISTOR_EIA_3('0.22', '5%')"));
+        self::assertSame('000', $this->renderCode("RESISTOR_EIA_3('0', '5%')"));
+    }
+
+    public function testFourDigitSmdCodes(): void
+    {
+        self::assertSame('2201', $this->renderCode("RESISTOR_EIA_4('2200')"));
+        self::assertSame('2201F', $this->renderCode("RESISTOR_EIA_4('2200', '1%')"));
+        self::assertSame('1001F', $this->renderCode("RESISTOR_EIA_4('1000', '1%')"));
+        self::assertSame('4992F', $this->renderCode("RESISTOR_EIA_4('49900', '1%')"));
+        self::assertSame('7500F', $this->renderCode("RESISTOR_EIA_4('750', '1%')"));
+        self::assertSame('4R70F', $this->renderCode("RESISTOR_EIA_4('4.7', '1%')"));
+        self::assertSame('R102F', $this->renderCode("RESISTOR_EIA_4('0.102', '1%')"));
+        self::assertSame('0000', $this->renderCode("RESISTOR_EIA_4('0', '1%')"));
+    }
+
+    public function testEia96Codes(): void
+    {
+        self::assertSame('01C', $this->renderCode("RESISTOR_EIA_96('10000')"));
+        self::assertSame('01C', $this->renderCode("RESISTOR_EIA_96('10000', '1%')"));
+        self::assertSame('10A', $this->renderCode("RESISTOR_EIA_96('124', '1%')"));
+        self::assertSame('66B', $this->renderCode("RESISTOR_EIA_96('4750', '1%')"));
+        self::assertSame('96Y', $this->renderCode("RESISTOR_EIA_96('9.76', '1%')"));
+        self::assertSame('', $this->renderCode("RESISTOR_EIA_96('4700', '1%')"));
+        self::assertSame('', $this->renderCode("RESISTOR_EIA_96('10000', '5%')"));
+    }
+
+    public function testSmdCodeParameterArgumentsAndToleranceLetters(): void
+    {
+        self::assertSame(
+            '4701F',
+            $this->provider->replace(
+                "[[RESISTOR_EIA_4(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]",
+                $this->part
+            )
+        );
+        self::assertSame('100G', $this->renderCode("RESISTOR_EIA_3('10', '2%')"));
+        self::assertSame('100K', $this->renderCode("RESISTOR_EIA_3('10', '10%')"));
+        self::assertSame('100M', $this->renderCode("RESISTOR_EIA_3('10', '20%')"));
+        self::assertSame('', $this->renderCode("RESISTOR_EIA_3('10', '0.5%')"));
+    }
+
+    private function renderCode(string $expression): string
+    {
+        return $this->provider->replace('[['.$expression.']]', $this->part) ?? '';
+    }
+
     /** @return list<string> */
     private function renderLiteralResistance(float $resistance, float $tolerance): array
     {

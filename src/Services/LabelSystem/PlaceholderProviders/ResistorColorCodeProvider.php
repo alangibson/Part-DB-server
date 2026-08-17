@@ -10,6 +10,26 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 #[AsTaggedItem(priority: 30)]
 final readonly class ResistorColorCodeProvider implements PlaceholderProviderInterface
 {
+    private const EIA96_VALUES = [
+        100, 102, 105, 107, 110, 113, 115, 118, 121, 124, 127, 130,
+        133, 137, 140, 143, 147, 150, 154, 158, 162, 165, 169, 174,
+        178, 182, 187, 191, 196, 200, 205, 210, 215, 221, 226, 232,
+        237, 243, 249, 255, 261, 267, 274, 280, 287, 294, 301, 309,
+        316, 324, 332, 340, 348, 357, 365, 374, 383, 392, 402, 412,
+        422, 432, 442, 453, 464, 475, 487, 499, 511, 523, 536, 549,
+        562, 576, 590, 604, 619, 634, 649, 665, 681, 698, 715, 732,
+        750, 768, 787, 806, 825, 845, 866, 887, 909, 931, 953, 976,
+    ];
+
+    private const EIA96_MULTIPLIERS = [
+        -2 => 'Y', -1 => 'X', 0 => 'A', 1 => 'B',
+        2 => 'C', 3 => 'D', 4 => 'E', 5 => 'F',
+    ];
+
+    private const TOLERANCE_LETTERS = [
+        '1' => 'F', '2' => 'G', '5' => 'J', '10' => 'K', '20' => 'M',
+    ];
+
     private const DIGIT_COLORS = [
         '#111111', '#7b3f00', '#d62828', '#f77f00', '#fcbf49',
         '#2a9d3f', '#277da1', '#7b2cbf', '#808080', '#f5f5f5',
@@ -34,6 +54,10 @@ final readonly class ResistorColorCodeProvider implements PlaceholderProviderInt
 
     public function replace(string $placeholder, object $label_target, array $options = []): ?string
     {
+        if (preg_match('/^\[\[RESISTOR_EIA_(3|4|96)\((.*)\)\]\]$/i', $placeholder, $matches) === 1) {
+            return $this->renderSmdCode($matches[1], $matches[2], $label_target);
+        }
+
         if (preg_match('/^\[\[RESISTOR_([45])_BAND\((.*)\)\]\]$/i', $placeholder, $matches) !== 1) {
             return null;
         }
@@ -59,6 +83,109 @@ final readonly class ResistorColorCodeProvider implements PlaceholderProviderInt
         }
 
         return $this->renderImage($colors, $resistance, $tolerance, $band_count);
+    }
+
+    private function renderSmdCode(string $type, string $argument_string, object $target): string
+    {
+        $arguments = $this->splitArguments($argument_string);
+        if (count($arguments) < 1 || count($arguments) > 2) {
+            return '';
+        }
+
+        $resistance = $this->resolveNumber($arguments[0], $target);
+        $tolerance = isset($arguments[1]) ? $this->resolveNumber($arguments[1], $target) : null;
+        if ($resistance === null || $resistance < 0 || (isset($arguments[1]) && $tolerance === null)) {
+            return '';
+        }
+
+        if ($type === '96') {
+            return $tolerance === null || abs($tolerance - 1.0) < 0.00001
+                ? $this->encodeEia96($resistance)
+                : '';
+        }
+
+        if ($resistance === 0.0) {
+            return str_repeat('0', (int) $type);
+        }
+
+        $tolerance_letter = '';
+        if ($tolerance !== null) {
+            $tolerance_key = rtrim(rtrim(number_format($tolerance, 2, '.', ''), '0'), '.');
+            $tolerance_letter = self::TOLERANCE_LETTERS[$tolerance_key] ?? '';
+            if ($tolerance_letter === '') {
+                return '';
+            }
+        }
+
+        $code = $this->encodeDigitCode($resistance, (int) $type);
+        return $code !== '' ? $code.$tolerance_letter : '';
+    }
+
+    private function encodeDigitCode(float $resistance, int $digits): string
+    {
+        if ($resistance === 0.0) {
+            return str_repeat('0', $digits);
+        }
+
+        $significant_digits = $digits - 1;
+        $minimum_integer_value = 10 ** ($significant_digits - 1);
+        if ($resistance < $minimum_integer_value) {
+            return $this->encodeDecimalCode($resistance, $significant_digits);
+        }
+
+        $multiplier = (int) floor(log10($resistance)) - ($significant_digits - 1);
+        $significand = (int) round($resistance / (10 ** $multiplier));
+        if ($significand >= 10 ** $significant_digits) {
+            $significand = intdiv($significand, 10);
+            ++$multiplier;
+        }
+
+        if ($multiplier < 0 || $multiplier > 9) {
+            return '';
+        }
+
+        return str_pad((string) $significand, $significant_digits, '0', STR_PAD_LEFT).$multiplier;
+    }
+
+    private function encodeDecimalCode(float $resistance, int $significant_digits): string
+    {
+        $decimal_places = max(0, $significant_digits - (int) floor(log10($resistance)) - 1);
+        $formatted = number_format($resistance, $decimal_places, '.', '');
+        if ($resistance < 1 && str_starts_with($formatted, '0.')) {
+            return 'R'.substr($formatted, 2);
+        }
+
+        return str_replace('.', 'R', $formatted);
+    }
+
+    private function encodeEia96(float $resistance): string
+    {
+        if ($resistance <= 0) {
+            return '';
+        }
+
+        $multiplier = (int) floor(log10($resistance / 100));
+        $base_value = $resistance / (10 ** $multiplier);
+        $closest_index = null;
+        $closest_difference = INF;
+        foreach (self::EIA96_VALUES as $index => $value) {
+            $difference = abs($base_value - $value);
+            if ($difference < $closest_difference) {
+                $closest_index = $index;
+                $closest_difference = $difference;
+            }
+        }
+
+        if ($closest_index === null || !isset(self::EIA96_MULTIPLIERS[$multiplier])) {
+            return '';
+        }
+
+        // Only encode actual EIA-96 values; do not silently substitute the nearest value.
+        if ($closest_difference > max(0.00001, self::EIA96_VALUES[$closest_index] * 0.00001)) {
+            return '';
+        }
+
+        return sprintf('%02d%s', $closest_index + 1, self::EIA96_MULTIPLIERS[$multiplier]);
     }
 
     /** @return list<string> */
