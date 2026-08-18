@@ -84,7 +84,8 @@ final class LabelGenerator
             $options->toMillimeters($options->getPaperWidth()),
             $options->toMillimeters($options->getPaperHeight()),
         ));
-        $dompdf->loadHtml($this->labelHTMLGenerator->getLabelHTML($options, $elements, $copies, $startSlot));
+        $html = $this->labelHTMLGenerator->getLabelHTML($options, $elements, $copies, $startSlot);
+        $dompdf->loadHtml($this->tableColumnWidthNormalizer->normalize($html));
         $dompdf->render();
 
         return $dompdf->output() ?? throw new \RuntimeException('Could not generate label!');
