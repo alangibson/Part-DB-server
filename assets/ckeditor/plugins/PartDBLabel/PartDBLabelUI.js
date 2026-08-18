@@ -80,6 +80,7 @@ const PLACEHOLDERS = [
             ['[[NAME]]', 'Part name'],
             ['[[CATEGORY]]', 'Category'],
             ['[[CATEGORY_FULL]]', 'Category (Full path)'],
+            ['[[NEAREST_CATEGORY_PREVIEW]]', 'Nearest category preview image'],
             ['[[MANUFACTURER]]', 'Manufacturer'],
             ['[[MANUFACTURER_FULL]]', 'Manufacturer (Full path)'],
             ['[[FOOTPRINT]]', 'Footprint'],

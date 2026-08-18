@@ -27,6 +27,7 @@ add( "de", {
     'Part name': 'Bauteilname',
     'Category': 'Kategorie',
     'Category (Full path)': 'Kategorie (Vollständiger Pfad)',
+    'Nearest category preview image': 'Vorschaubild der nächsten Kategorie',
     'Manufacturer': 'Hersteller',
     'Manufacturer (Full path)': 'Hersteller (Vollständiger Pfad)',
     'Footprint': 'Footprint',
