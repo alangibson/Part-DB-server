@@ -31,6 +31,17 @@ final class LabelTableColumnWidthNormalizerTest extends TestCase
         self::assertStringContainsString('table-layout:fixed', $this->table($document)->getAttribute('style'));
     }
 
+    public function testClampsOversizedInlineTableWidthToLabelWidth(): void
+    {
+        $document = $this->normalize('<table class="layout-table ck-table-resized" style="width:108.46%"><colgroup>'
+            .'<col style="width:25%"><col style="width:75%">'
+            .'</colgroup><tr><td></td><td></td></tr></table>');
+
+        self::assertStringContainsString('width:100%', $this->table($document)->getAttribute('style'));
+        self::assertStringNotContainsString('108.46%', $this->table($document)->getAttribute('style'));
+        self::assertSame('100%', $this->table($document)->getAttribute('width'));
+    }
+
     public function testSupportsColumnAndCellSpans(): void
     {
         $document = $this->normalize('<table class="layout-table"><colgroup>'

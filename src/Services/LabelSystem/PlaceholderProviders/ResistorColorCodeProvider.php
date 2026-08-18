@@ -300,15 +300,15 @@ final readonly class ResistorColorCodeProvider implements PlaceholderProviderInt
             $bands .= sprintf('<rect x="%d" y="4" width="10" height="36" fill="%s"/>', $positions[$index], $color);
         }
 
-        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="44" viewBox="0 0 120 44">'
-            .'<rect x="0" y="0" width="120" height="44" fill="none" stroke="#9c8658" stroke-width="2"/>'
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="44" viewBox="0 0 120 44" preserveAspectRatio="none">'
+            .'<rect x="1" y="1" width="118" height="42" fill="none" stroke="#9c8658" stroke-width="2"/>'
             .$bands.'</svg>';
         $alt = $tolerance === null
             ? sprintf('%d-band resistor, %g ohms', $band_count, $resistance)
             : sprintf('%d-band resistor, %g ohms, %g%% tolerance', $band_count, $resistance, $tolerance);
 
         return sprintf(
-            '<img class="resistor-color-code" src="data:image/svg+xml;base64,%s" alt="%s" style="display:block;width:100%%;height:auto">',
+            '<img class="resistor-color-code" src="data:image/svg+xml;base64,%s" alt="%s" style="display:block;max-width:100%%;max-height:100%%">',
             base64_encode($svg),
             htmlspecialchars($alt, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
         );
