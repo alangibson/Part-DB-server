@@ -48,9 +48,14 @@ use Doctrine\ORM\EntityManager;
 use App\Entity\Parts\Category;
 use App\Entity\Parts\Footprint;
 use App\Entity\Parts\Part;
+use App\Entity\Attachments\CategoryAttachment;
+use App\Services\Attachments\AttachmentManager;
+use App\Services\Attachments\AttachmentURLGenerator;
+use App\Services\Formatters\SIFormatter;
 use App\Services\LabelSystem\PlaceholderProviders\PartProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Group('DB')]
 final class PartProviderTest extends WebTestCase
@@ -104,5 +109,46 @@ final class PartProviderTest extends WebTestCase
     public function testReplace(string $expected, string $placeholder): void
     {
         $this->assertSame($expected, $this->service->replace($placeholder, $this->target));
+    }
+
+    public function testNearestCategoryPreviewFallsBackToParent(): void
+    {
+        $parent = new Category();
+        $parent->setName('Parent & category');
+        $preview = new CategoryAttachment();
+        $parent->setMasterPictureAttachment($preview);
+
+        $child = new Category();
+        $child->setName('Child');
+        $child->setParent($parent);
+        $this->target->setCategory($child);
+
+        $urlGenerator = $this->createMock(AttachmentURLGenerator::class);
+        $urlGenerator->expects($this->once())
+            ->method('getThumbnailURL')
+            ->with($preview, 'thumbnail_md')
+            ->willReturn('/preview/image?a=1&b=2');
+
+        $service = new PartProvider(
+            self::getContainer()->get(SIFormatter::class),
+            self::getContainer()->get(TranslatorInterface::class),
+            $urlGenerator,
+            self::getContainer()->get(AttachmentManager::class),
+        );
+
+        $this->assertSame(
+            '<img src="/preview/image?a=1&amp;b=2" width="100%" alt="Parent &amp; category"/>',
+            $service->replace('[[NEAREST_CATEGORY_PREVIEW]]', $this->target),
+        );
+    }
+
+    public function testNearestCategoryPreviewIsEmptyWhenNoCategoryHasPreview(): void
+    {
+        $parent = new Category();
+        $child = new Category();
+        $child->setParent($parent);
+        $this->target->setCategory($child);
+
+        $this->assertSame('', $this->service->replace('[[NEAREST_CATEGORY_PREVIEW]]', $this->target));
     }
 }
