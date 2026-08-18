@@ -99,9 +99,13 @@ final class LabelTableColumnWidthNormalizer
         }
 
         $this->setStyleProperty($table, 'table-layout', 'fixed');
-        if ($this->getStyleProperty($table, 'width') === null) {
-            $this->setStyleProperty($table, 'width', '100%');
-        }
+        // CKEditor can persist resized tables wider than their editing area
+        // (for example width:108.46%). An inline width wins over the label
+        // stylesheet and pushes the final column beyond the printable label.
+        // Labels always use the complete available content width, while the
+        // colgroup percentages retain the user's relative column sizing.
+        $this->setStyleProperty($table, 'width', '100%');
+        $table->setAttribute('width', '100%');
     }
 
     private function getStyleProperty(DOMElement $element, string $property): ?string
