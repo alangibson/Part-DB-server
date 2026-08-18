@@ -39,7 +39,10 @@ final class ResistorColorCodeProviderTest extends TestCase
         self::assertIsString($html);
         self::assertStringContainsString('4-band resistor, 4700 ohms, 5% tolerance', $html);
         self::assertStringContainsString('class="resistor-color-code"', $html);
-        self::assertStringContainsString('style="display:block;width:100%;height:auto"', $html);
+        self::assertStringContainsString(
+            'style="display:block;max-width:100%;max-height:100%"',
+            $html
+        );
 
         $svg = $this->extractSvg($html);
         self::assertStringNotContainsString('<line', $svg);
@@ -47,7 +50,9 @@ final class ResistorColorCodeProviderTest extends TestCase
         self::assertStringContainsString('fill="none"', $svg);
         self::assertStringNotContainsString('#e8d5a7', $svg);
         self::assertStringContainsString('width="120" height="44" viewBox="0 0 120 44"', $svg);
-        self::assertStringContainsString('<rect x="0" y="0" width="120" height="44"', $svg);
+        self::assertStringContainsString('preserveAspectRatio="none"', $svg);
+        // Keep the centered stroke entirely inside the SVG viewport so neither edge is clipped.
+        self::assertStringContainsString('<rect x="1" y="1" width="118" height="42"', $svg);
         self::assertStringContainsString('fill="#fcbf49"', $svg); // 4
         self::assertStringContainsString('fill="#7b2cbf"', $svg); // 7
         self::assertStringContainsString('fill="#d62828"', $svg); // x100
