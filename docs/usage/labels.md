@@ -42,6 +42,7 @@ You can use the "Placeholders" dropdown in the content editor, to automatically 
 | `[[NAME]]`              | The name of the part                            | ATMega328                   |
 | `[[CATEGORY]]`          | The name of the category (without path)         | AVRs                        |
 | `[[CATEGORY_FULL]]`     | The full path of the category                   | Aktiv->MCUs->AVRs           |
+| `[[NEAREST_CATEGORY_PREVIEW]]` | The category preview image, falling back to the nearest ancestor | |
 | `[[MANUFACTURER]]`      | The name of the manufacturer                    | Atmel                       |
 | `[[MANUFACTURER_FULL]]` | The full path of the manufacturer               | Halbleiterhersteller->Atmel |
 | `[[FOOTPRINT]]`         | The name of the footprint (without path)        | DIP-32                      |

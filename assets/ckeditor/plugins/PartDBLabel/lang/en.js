@@ -27,6 +27,7 @@ add( "en", {
     'Part name': 'Part name',
     'Category': 'Category',
     'Category (Full path)': 'Category (full path)',
+    'Nearest category preview image': 'Nearest category preview image',
     'Manufacturer': 'Manufacturer',
     'Manufacturer (Full path)': 'Manufacturer (full path)',
     'Footprint': 'Footprint',

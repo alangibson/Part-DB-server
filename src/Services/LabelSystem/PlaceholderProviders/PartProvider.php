@@ -45,6 +45,8 @@ use App\Entity\Parts\Category;
 use App\Entity\Parts\Manufacturer;
 use App\Entity\Parts\Footprint;
 use App\Entity\Parts\Part;
+use App\Services\Attachments\AttachmentManager;
+use App\Services\Attachments\AttachmentURLGenerator;
 use App\Services\Formatters\SIFormatter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
@@ -58,7 +60,8 @@ final readonly class PartProvider implements PlaceholderProviderInterface
 {
     private MarkdownConverter $inlineConverter;
 
-    public function __construct(private SIFormatter $siFormatter, private TranslatorInterface $translator)
+    public function __construct(private SIFormatter $siFormatter, private TranslatorInterface $translator,
+        private AttachmentURLGenerator $attachmentURLGenerator, private AttachmentManager $attachmentManager)
     {
         $environment = new Environment();
         $environment->addExtension(new InlinesOnlyExtension());
@@ -77,6 +80,38 @@ final readonly class PartProvider implements PlaceholderProviderInterface
 
         if ('[[CATEGORY_FULL]]' === $placeholder) {
             return $part->getCategory() instanceof Category ? htmlspecialchars($part->getCategory()->getFullPath()) : '';
+        }
+
+        if ('[[NEAREST_CATEGORY_PREVIEW]]' === $placeholder) {
+            $category = $part->getCategory();
+
+            while ($category instanceof Category) {
+                $preview = $category->getMasterPictureAttachment();
+                if ($preview !== null) {
+                    $file = $this->attachmentManager->attachmentToFile($preview);
+                    if ($file !== null) {
+                        $contents = file_get_contents($file->getPathname());
+                        $mime = mime_content_type($file->getPathname());
+                        $url = $contents !== false && $mime !== false
+                            ? sprintf('data:%s;base64,%s', $mime, base64_encode($contents))
+                            : null;
+                    } else {
+                        $url = $this->attachmentURLGenerator->getThumbnailURL($preview, 'thumbnail_md');
+                    }
+
+                    if ($url !== null) {
+                        return sprintf(
+                            '<img src="%s" width="100%%" alt="%s"/>',
+                            htmlspecialchars($url, ENT_QUOTES),
+                            htmlspecialchars($category->getName(), ENT_QUOTES),
+                        );
+                    }
+                }
+
+                $category = $category->getParent();
+            }
+
+            return '';
         }
 
         if ('[[MANUFACTURER]]' === $placeholder) {
