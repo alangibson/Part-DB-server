@@ -33,7 +33,24 @@
     {% elseif is_granted('edit', part) %}
         <a href="{{ entity_url(part, 'edit') }}"><i class="fas fa-fw fa-sm fa-edit"></i></a>
     {% endif %}
+    {% if timeTravel is null and is_granted('change_favorite', part) %}
+        {% set favorite_action = part.favorite
+            ? 'part_list.action.action.unfavorite'|trans
+            : 'part_list.action.action.favorite'|trans %}
+        <button type="submit" form="part-favorite-form" class="btn btn-link p-0 border-0 align-baseline fs-3"
+                title="{{ favorite_action }}" aria-label="{{ favorite_action }}"
+                data-testid="part-favorite-toggle">
+            <i class="{{ part.favorite ? 'fa-solid' : 'fa-regular' }} fa-star fa-fw fa-sm" aria-hidden="true"></i>
+        </button>
+    {% endif %}
 </h3>
+
+{% if timeTravel is null and is_granted('change_favorite', part) %}
+    <form id="part-favorite-form" method="post" action="{{ path('part_toggle_favorite', {id: part.id}) }}"
+          data-testid="part-favorite-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('part_favorite_' ~ part.id) }}">
+    </form>
+{% endif %}
 
 {# Slighlty highlight every text in this block over normal text (similar to h5) #}
 <dl style="font-weight: 500;">
@@ -128,4 +145,3 @@
         </div>
     {% endif %} #}
 </dl>
-

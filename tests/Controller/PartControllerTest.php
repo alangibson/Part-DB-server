@@ -59,6 +59,38 @@ final class PartControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
+    public function testFavoriteCanBeToggledFromPartInfo(): void
+    {
+        $client = static::createClient();
+        $this->loginAsUser($client, 'admin');
+
+        $entityManager = $client->getContainer()->get('doctrine')->getManager();
+        $part = $entityManager->getRepository(Part::class)->find(1);
+
+        if (!$part) {
+            $this->markTestSkipped('Test part with ID 1 not found in fixtures');
+        }
+
+        $wasFavorite = $part->isFavorite();
+        $expectedIcon = $wasFavorite ? 'fa-solid' : 'fa-regular';
+        $expectedToggledIcon = $wasFavorite ? 'fa-regular' : 'fa-solid';
+
+        $crawler = $client->request('GET', '/en/part/' . $part->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('[data-testid="part-favorite-toggle"] .' . $expectedIcon . '.fa-star');
+
+        $client->submit($crawler->filter('[data-testid="part-favorite-form"]')->form());
+        $this->assertResponseRedirects('/en/part/' . $part->getId());
+
+        $client->followRedirect();
+        $this->assertSelectorExists('[data-testid="part-favorite-toggle"] .' . $expectedToggledIcon . '.fa-star');
+
+        $entityManager->refresh($part);
+        $part->setFavorite($wasFavorite);
+        $entityManager->flush();
+    }
+
     public function testShowPartWithTimestamp(): void
     {
         $client = static::createClient();
