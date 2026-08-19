@@ -162,6 +162,18 @@ final class PartController extends AbstractController
         );
     }
 
+    #[Route(path: '/{id}/favorite', name: 'part_toggle_favorite', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression("'part_favorite_' ~ args['part'].getId()"), '_token')]
+    public function toggleFavorite(Part $part): RedirectResponse
+    {
+        $this->denyAccessUnlessGranted('change_favorite', $part);
+
+        $part->setFavorite(!$part->isFavorite());
+        $this->em->flush();
+
+        return $this->redirectToRoute('part_info', ['id' => $part->getID()]);
+    }
+
     #[Route(path: '/{id}/add_lot', name: 'part_lot_add', methods: ['POST'])]
     public function addLot(Part $part, Request $request, EntityManagerInterface $em): Response
     {
