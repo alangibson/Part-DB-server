@@ -102,6 +102,7 @@ final class LabelTextReplacer
     public function replace(string $lines, object $target): string
     {
         $patterns = [
+            '/(\[\[CAPACITOR_IEC_(?:2|3)\(.*?\)\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
             '/(\[\[RESISTOR_EIA_(?:3|4|96)\(.*?\)\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
             '/(\[\[RESISTOR_[45]_BAND\(.*?\)\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
             '/(\[\[[A-Z_0-9]+\]\])/' => fn($match): string => $this->handlePlaceholder($match[0], $target),

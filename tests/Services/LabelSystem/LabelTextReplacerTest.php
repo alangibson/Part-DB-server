@@ -95,6 +95,7 @@ final class LabelTextReplacerTest extends WebTestCase
         yield ['TEST[[ ]]TEST', 'TEST[[ ]]TEST'];
         yield ['', "[[parameters['Missing']]]"];
         yield ['', "[[RESISTOR_4_BAND(PARAMETERS['Missing'])]]"];
+        yield ['', "[[CAPACITOR_IEC_3(PARAMETERS['Missing'])]]"];
     }
 
     #[DataProvider('handlePlaceholderDataProvider')]
