@@ -155,6 +155,9 @@ const PLACEHOLDERS = [
             ["[[RESISTOR_EIA_4(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", '4-digit SMD resistor code with tolerance'],
             ["[[RESISTOR_EIA_96(PARAMETERS['Resistance'])]]", 'EIA-96 SMD resistor code'],
             ["[[RESISTOR_EIA_96(PARAMETERS['Resistance'], PARAMETERS['Tolerance'])]]", 'EIA-96 SMD resistor code with tolerance validation'],
+            ["[[CAPACITOR_IEC_3(PARAMETERS['Capacitance'])]]", 'IEC three-character capacitor code'],
+            ["[[CAPACITOR_IEC_3(PARAMETERS['Capacitance'], PARAMETERS['Tolerance'])]]", 'IEC three-character capacitor code with tolerance'],
+            ["[[CAPACITOR_IEC_2(PARAMETERS['Capacitance'])]]", 'EIA/IEC two-character compact capacitor code'],
         ]
     },
     {
