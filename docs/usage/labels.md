@@ -261,6 +261,24 @@ certain data:
 | `format_si(value, unit_str)`                | Format a value using SI prefixes and the given unit string                                   |
 | `placeholders(element)`                     | Replace all placeholders in a string with the values of the element                          |
 
+## Labelle batch files
+
+The **Label output format** setting normally produces a PDF. Selecting **DYMO / Labelle batch file** instead downloads
+a UTF-8 `.labelle` file containing [Labelle batch-mode](https://github.com/labelle-org/labelle#more-control-with-batch-mode)
+input. A Labelle file contains exactly one label, so only one target ID can be selected for this output format.
+
+Part-DB does not send this file to a printer or run Labelle. Install and configure Labelle on the computer connected to
+the printer, then print the downloaded file with a command such as:
+
+```shell
+labelle --batch < label_part_123.labelle
+```
+
+Labelle batch mode supports plain text, QR codes, and selected one-dimensional barcodes. CKEditor layout-table columns
+are converted into horizontal text blocks, and their rows become `NEWLINE` entries. Exact column widths, borders, CSS,
+and rich-text styling cannot be represented and are reported as warnings. Unsupported layouts and barcode types prevent
+the Labelle file from being generated; PDF output is not affected by these restrictions.
+
 ## Use custom fonts for PDF labels
 
 You can use your own fonts for label generation. To do this, put the TTF files of the fonts you want to use into

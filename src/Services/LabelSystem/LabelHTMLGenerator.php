@@ -71,6 +71,27 @@ final class LabelHTMLGenerator
             throw new InvalidArgumentException('$elements must not be empty');
         }
 
+        $twig_elements = $this->getRenderedElements($options, $elements);
+
+        return $this->twig->render('label_system/labels/base_label.html.twig', [
+            'meta_title' => $this->getPDFTitle($options, $elements[0]),
+            'elements' => $twig_elements,
+            'options' => $options,
+        ]);
+    }
+
+    /**
+     * Render placeholders or Twig for each label target without wrapping the result in a PDF page.
+     *
+     * @param object[] $elements
+     * @return array<int, array{element: object, lines: string, barcode: ?string, barcode_content: ?string}>
+     */
+    public function getRenderedElements(LabelOptions $options, array $elements): array
+    {
+        if ($elements === []) {
+            throw new InvalidArgumentException('$elements must not be empty');
+        }
+
         $twig_elements = [];
 
         if (LabelProcessMode::TWIG === $options->getProcessMode()) {
@@ -112,11 +133,7 @@ final class LabelHTMLGenerator
             ++$page;
         }
 
-        return $this->twig->render('label_system/labels/base_label.html.twig', [
-            'meta_title' => $this->getPDFTitle($options, $elements[0]),
-            'elements' => $twig_elements,
-            'options' => $options,
-        ]);
+        return $twig_elements;
     }
 
     private function getPDFTitle(LabelOptions $options, object $element): string

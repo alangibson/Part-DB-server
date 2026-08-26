@@ -28,10 +28,12 @@ use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\LabelGenerationRequest;
 use App\Entity\Base\AbstractDBElement;
 use App\Entity\LabelSystem\LabelProfile;
+use App\Entity\LabelSystem\LabelOutputFormat;
+use App\Exceptions\LabelleConversionException;
 use App\Repository\DBElementRepository;
 use App\Repository\LabelProfileRepository;
 use App\Services\ElementTypeNameGenerator;
-use App\Services\LabelSystem\LabelGenerator;
+use App\Services\LabelSystem\Output\LabelOutputManager;
 use App\Services\Misc\RangeParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -44,7 +46,7 @@ class LabelGenerationProcessor implements ProcessorInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly LabelGenerator $labelGenerator,
+        private readonly LabelOutputManager $labelOutputManager,
         private readonly RangeParser $rangeParser,
         private readonly ElementTypeNameGenerator $elementTypeNameGenerator,
         private readonly Security $security,
@@ -107,35 +109,38 @@ class LabelGenerationProcessor implements ProcessorInterface
             throw new NotFoundHttpException('No elements found with the provided IDs.');
         }
 
-        // Generate the PDF
+        // Generate the requested file. PDF remains the default for backwards compatibility.
         try {
-            $pdfContent = $this->labelGenerator->generateLabel($options, $elements);
+            $filenameBase = $this->generateFilenameBase($elements[0], $profile);
+            $generatedFile = $this->labelOutputManager->generate(
+                $request->outputFormat ?? LabelOutputFormat::PDF,
+                $options,
+                $elements,
+                $filenameBase,
+            );
+        } catch (LabelleConversionException $e) {
+            throw new BadRequestHttpException('Failed to generate Labelle file: '.$e->getMessage());
         } catch (\Exception $e) {
             throw new BadRequestHttpException('Failed to generate label: ' . $e->getMessage());
         }
 
-        // Generate filename
-        $filename = $this->generateFilename($elements[0], $profile);
-
-
-        // Return PDF as response
         return new Response(
-            $pdfContent,
+            $generatedFile->content,
             Response::HTTP_OK,
             [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
-                'Content-Length' => (string) strlen($pdfContent),
+                'Content-Type' => $generatedFile->mimeType,
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $generatedFile->filename),
+                'Content-Length' => (string) strlen($generatedFile->content),
             ]
         );
     }
 
-    private function generateFilename(AbstractDBElement $element, LabelProfile $profile): string
+    private function generateFilenameBase(AbstractDBElement $element, LabelProfile $profile): string
     {
         $ret = 'label_' . $this->elementTypeNameGenerator->typeLabel($element);
         $ret .= $element->getID();
         $ret .= '_' . preg_replace('/[^a-z0-9_\-]/i', '_', $profile->getName());
 
-        return $ret . '.pdf';
+        return $ret;
     }
 }

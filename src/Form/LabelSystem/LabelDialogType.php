@@ -41,11 +41,13 @@ declare(strict_types=1);
 
 namespace App\Form\LabelSystem;
 
+use App\Entity\LabelSystem\LabelOutputFormat;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Form\LabelOptionsType;
 use App\Validator\Constraints\Misc\ValidRange;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -65,6 +67,16 @@ class LabelDialogType extends AbstractType
             'constraints' => [
                 new ValidRange(),
             ],
+        ]);
+
+        $builder->add('output_format', EnumType::class, [
+            'class' => LabelOutputFormat::class,
+            'data' => LabelOutputFormat::PDF,
+            'label' => 'label_generator.output_format.label',
+            'choice_label' => static fn(LabelOutputFormat $format): string => match ($format) {
+                LabelOutputFormat::PDF => 'label_generator.output_format.pdf',
+                LabelOutputFormat::LABELLE => 'label_generator.output_format.labelle',
+            },
         ]);
 
         $builder->add('options', LabelOptionsType::class, [
