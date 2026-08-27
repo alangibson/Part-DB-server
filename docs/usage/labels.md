@@ -58,6 +58,25 @@ You can use the "Placeholders" dropdown in the content editor, to automatically 
 | `[[LAST_MODIFIED]]`     | The datetime when the element was last modified | 2/26/16, 5:38 PM            |
 | `[[CREATION_DATE]]`     | The datetime when the element was created       | 2/26/16, 5:38 PM            |
 
+Part parameters can be selected by name. `[[PARAMETERS['Resistance']]]` returns the parameter's formatted value,
+while `PARAM` gives access to individual parameter fields:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `[[PARAM['Resistance'].VALUE]]` | The typical value, or the text value when no typical value is set |
+| `[[PARAM['Resistance'].NAME]]` | Parameter name |
+| `[[PARAM['Resistance'].SYMBOL]]` | Symbol |
+| `[[PARAM['Resistance'].MIN]]` | Minimum value |
+| `[[PARAM['Resistance'].TYPICAL]]` | Typical value |
+| `[[PARAM['Resistance'].MAX]]` | Maximum value |
+| `[[PARAM['Resistance'].UNIT]]` | Unit |
+| `[[PARAM['Resistance'].TEXT]]` | Text value |
+| `[[PARAM['Resistance'].GROUP]]` | Parameter group |
+| `[[PARAM['Resistance'].FORMATTED]]` | Complete formatted value, equivalent to `PARAMETERS` |
+
+`ID`, `EDA_VISIBILITY`, and `EDA_SYMBOL_VISIBILITY` are also available. For part-lot labels, use
+`PART.PARAM` or `STORAGE_LOCATION.PARAM` to explicitly select part or storage-location parameters.
+
 ### Part lot
 
 | Placeholder           | Description                           | Example                |

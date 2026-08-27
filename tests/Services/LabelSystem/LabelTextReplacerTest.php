@@ -41,10 +41,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\LabelSystem;
 
-use PHPUnit\Framework\Attributes\DataProvider;
+use App\Entity\Parameters\PartParameter;
 use App\Entity\Parts\Part;
 use App\Entity\Parts\PartLot;
 use App\Services\LabelSystem\LabelTextReplacer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class LabelTextReplacerTest extends WebTestCase
@@ -69,6 +70,11 @@ final class LabelTextReplacerTest extends WebTestCase
         $this->target->setName('Part 1');
         $this->target->setDescription('P Description');
         $this->target->setComment('P Comment');
+
+        $parameter = new PartParameter();
+        $parameter->setName('Test');
+        $parameter->setValueTypical(42.0);
+        $this->target->addParameter($parameter);
     }
 
     public static function handlePlaceholderDataProvider(): \Iterator
@@ -94,6 +100,8 @@ final class LabelTextReplacerTest extends WebTestCase
         yield ['[[]]', '[[]]'];
         yield ['TEST[[ ]]TEST', 'TEST[[ ]]TEST'];
         yield ['', "[[parameters['Missing']]]"];
+        yield ['42', "[[PARAM['Test'].VALUE]]"];
+        yield ['', "[[PARAM['Missing'].VALUE]]"];
         yield ['', "[[RESISTOR_4_BAND(PARAMETERS['Missing'])]]"];
         yield ['', "[[CAPACITOR_IEC_3(PARAMETERS['Missing'])]]"];
     }

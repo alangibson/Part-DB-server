@@ -19,11 +19,50 @@ final class ParameterProvider implements PlaceholderProviderInterface
     public function replace(string $placeholder, object $label_target, array $options = []): ?string
     {
         $parameter = $this->findParameter($placeholder, $label_target);
-        if ($parameter === false) {
+        if ($parameter !== false) {
+            return $parameter instanceof AbstractParameter ? htmlspecialchars($parameter->getFormattedValue()) : '';
+        }
+
+        if (preg_match('/^\[\[(?:(part|storage_location)\.)?param\[\s*([\'\"])((?:\\\\.|(?!\2).)*)\2\s*\]\.([a-z_]+)\]\]$/i', $placeholder, $matches) !== 1) {
             return null;
         }
 
-        return $parameter instanceof AbstractParameter ? htmlspecialchars($parameter->getFormattedValue()) : '';
+        $parameter = $this->findParameterByName(
+            stripcslashes($matches[3]),
+            $label_target,
+            strtolower($matches[1])
+        );
+        if (!$parameter instanceof AbstractParameter) {
+            return '';
+        }
+
+        $value = match (strtoupper($matches[4])) {
+            'ID' => $parameter->getID(),
+            'NAME' => $parameter->getName(),
+            'SYMBOL' => $parameter->getSymbol(),
+            'MIN' => $parameter->getValueMin(),
+            'TYPICAL' => $parameter->getValueTypical(),
+            'MAX' => $parameter->getValueMax(),
+            'UNIT' => $parameter->getUnit(),
+            'TEXT' => $parameter->getValueText(),
+            'GROUP' => $parameter->getGroup(),
+            'EDA_VISIBILITY' => $parameter->isEdaVisibility(),
+            'EDA_SYMBOL_VISIBILITY' => $parameter->isEdaSymbolVisibility(),
+            'FORMATTED' => $parameter->getFormattedValue(),
+            // VALUE deliberately checks for null, so a typical value of 0.0 is retained.
+            'VALUE' => $parameter->getValueTypical() ?? $parameter->getValueText(),
+            default => null,
+        };
+
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_bool($value)) {
+            $value = $value ? '1' : '0';
+        }
+
+        return htmlspecialchars((string) $value);
     }
 
     /**
@@ -35,8 +74,14 @@ final class ParameterProvider implements PlaceholderProviderInterface
             return false;
         }
 
-        $scope = strtolower($matches[1] ?? '');
+        $scope = strtolower($matches[1]);
         $parameter_name = stripcslashes($matches[3]);
+
+        return $this->findParameterByName($parameter_name, $label_target, $scope);
+    }
+
+    private function findParameterByName(string $parameter_name, object $label_target, string $scope): ?AbstractParameter
+    {
         $element = $this->resolveElement($label_target, $scope);
 
         if (!$element instanceof Part && !$element instanceof StorageLocation) {

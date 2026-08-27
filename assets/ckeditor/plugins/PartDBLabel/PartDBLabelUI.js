@@ -56,7 +56,7 @@ export default class PartDBLabelUI extends Plugin {
             this.listenTo( dropdownView, 'execute', evt => {
                 const value = evt.source.commandParam;
 
-                if (value.includes('PARAMETERS[')) {
+                if (value.includes('PARAMETERS[') || value.includes('PARAM[')) {
                     editor.model.change(writer => {
                         editor.model.insertContent(writer.createText(value));
                     });
@@ -100,6 +100,7 @@ const PLACEHOLDERS = [
             ['[[IPN_BARCODE_C128]]', 'IPN as Code 128 barcode'],
             ['[[IPN_BARCODE_C39]]', 'IPN as Code 39 barcode'],
             ["[[PARAMETERS['...']]]", 'Parameter by name'],
+            ["[[PARAM['...'].VALUE]]", 'Param object by name'],
         ]
     },
     {
