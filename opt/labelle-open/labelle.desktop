@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=DYMO Printer
+Comment=Open Labelle label files
+Exec=/opt/labelle-open/labelle-open %f
+Terminal=false
+MimeType=application/x-labelle;
+NoDisplay=false
+Categories=Utility;
