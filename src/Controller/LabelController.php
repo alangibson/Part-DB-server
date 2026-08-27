@@ -90,7 +90,8 @@ class LabelController extends AbstractController
 
         $form = $this->createForm(LabelDialogType::class, null, [
             'disable_options' => $disable_options,
-            'profile' => $profile
+            'profile' => $profile,
+            'output_format' => $profile?->getOutputFormat() ?? LabelOutputFormat::PDF,
         ]);
 
         //Try to parse given target_type and target_id
@@ -110,6 +111,8 @@ class LabelController extends AbstractController
 
         /** @var LabelOptions $form_options */
         $form_options = $form['options']->getData();
+        /** @var LabelOutputFormat $form_output_format */
+        $form_output_format = $form->get('output_format')->getData();
 
         $pdf_data = null;
         $labelle_data = null;
@@ -131,6 +134,7 @@ class LabelController extends AbstractController
                 $new_profile = new LabelProfile();
                 $new_profile->setName($form->get('save_profile_name')->getData());
                 $new_profile->setOptions($form_options);
+                $new_profile->setOutputFormat($form_output_format);
 
                 //Validate the profile name
                 $errors = $this->validator->validate($new_profile);
@@ -158,6 +162,7 @@ class LabelController extends AbstractController
                 && $this->isGranted('edit', $profile)) {
                 //Update the profile options
                 $profile->setOptions($form_options);
+                $profile->setOutputFormat($form_output_format);
 
                 //Validate the profile name
                 $errors = $this->validator->validate($profile);
@@ -188,16 +193,14 @@ class LabelController extends AbstractController
 
             if ($targets !== []) {
                 try {
-                    /** @var LabelOutputFormat $output_format */
-                    $output_format = $form->get('output_format')->getData();
                     $generated_file = $this->labelOutputManager->generate(
-                        $output_format,
+                        $form_output_format,
                         $form_options,
                         $targets,
                         $this->getLabelNameBase($targets[0], $profile),
                     );
                     $filename = $generated_file->filename;
-                    if ($output_format === LabelOutputFormat::PDF) {
+                    if ($form_output_format === LabelOutputFormat::PDF) {
                         $pdf_data = $generated_file->content;
                     } else {
                         $labelle_data = $generated_file->content;

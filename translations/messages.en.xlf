@@ -14264,7 +14264,7 @@ Buerklin-API Authentication server:
     <unit id="DymoOutputFormat" name="label_generator.output_format.label">
       <segment state="translated">
         <source>label_generator.output_format.label</source>
-        <target>Label output format</target>
+        <target>File type</target>
       </segment>
     </unit>
     <unit id="DymoOutputPdf" name="label_generator.output_format.pdf">

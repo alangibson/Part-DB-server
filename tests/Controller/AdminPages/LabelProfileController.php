@@ -41,6 +41,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\AdminPages;
 
+use App\Entity\UserSystem\User;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use App\Entity\LabelSystem\LabelProfile;
@@ -50,6 +52,22 @@ final class LabelProfileController extends AbstractAdminController
 {
     protected static string $base_path = '/en/label_profile';
     protected static string $entity_class = LabelProfile::class;
+
+    public function testOutputFormatCanBeConfigured(): void
+    {
+        $client = static::createClient();
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $user = $entityManager->getRepository(User::class)->findOneBy(['name' => 'admin']);
+        self::assertInstanceOf(User::class, $user);
+        $client->loginUser($user);
+        $profile = $entityManager->getRepository(LabelProfile::class)->findOneBy([]);
+        self::assertInstanceOf(LabelProfile::class, $profile);
+
+        $client->request('GET', static::$base_path.'/'.$profile->getID().'/edit');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="label_profile_admin_form[output_format]"] option[value="pdf"]:checked');
+    }
 
     /**
      * Tests if deleting an entity is working.

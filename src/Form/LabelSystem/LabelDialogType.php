@@ -71,7 +71,7 @@ class LabelDialogType extends AbstractType
 
         $builder->add('output_format', EnumType::class, [
             'class' => LabelOutputFormat::class,
-            'data' => LabelOutputFormat::PDF,
+            'data' => $options['output_format'],
             'label' => 'label_generator.output_format.label',
             'choice_label' => static fn(LabelOutputFormat $format): string => match ($format) {
                 LabelOutputFormat::PDF => 'label_generator.output_format.pdf',
@@ -120,5 +120,7 @@ class LabelDialogType extends AbstractType
         $resolver->setDefault('mapped', false);
         $resolver->setDefault('disable_options', false);
         $resolver->setDefault('profile', null);
+        $resolver->setDefault('output_format', LabelOutputFormat::PDF);
+        $resolver->setAllowedTypes('output_format', LabelOutputFormat::class);
     }
 }

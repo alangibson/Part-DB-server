@@ -119,6 +119,10 @@ class LabelProfile extends AttachmentContainingDBElement
     #[Groups(["extended", "full", "import", "label_profile:read"])]
     protected bool $show_in_dropdown = true;
 
+    #[ORM\Column(type: Types::STRING, enumType: LabelOutputFormat::class, options: ['default' => 'pdf'])]
+    #[Groups(["extended", "full", "import", "label_profile:read"])]
+    protected LabelOutputFormat $output_format = LabelOutputFormat::PDF;
+
     public function __construct()
     {
         $this->attachments = new ArrayCollection();
@@ -169,6 +173,18 @@ class LabelProfile extends AttachmentContainingDBElement
     public function setShowInDropdown(bool $show_in_dropdown): self
     {
         $this->show_in_dropdown = $show_in_dropdown;
+
+        return $this;
+    }
+
+    public function getOutputFormat(): LabelOutputFormat
+    {
+        return $this->output_format;
+    }
+
+    public function setOutputFormat(LabelOutputFormat $output_format): self
+    {
+        $this->output_format = $output_format;
 
         return $this;
     }

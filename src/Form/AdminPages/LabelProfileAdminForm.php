@@ -42,9 +42,11 @@ declare(strict_types=1);
 namespace App\Form\AdminPages;
 
 use App\Entity\Base\AbstractNamedDBElement;
+use App\Entity\LabelSystem\LabelOutputFormat;
 use App\Entity\LabelSystem\LabelProfile;
 use App\Form\LabelOptionsType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -62,6 +64,14 @@ class LabelProfileAdminForm extends BaseEntityAdminForm
         $builder->add('show_in_dropdown', CheckboxType::class, [
             'required' => false,
             'label' => 'label_profile.showInDropdown',
+        ]);
+        $builder->add('output_format', EnumType::class, [
+            'class' => LabelOutputFormat::class,
+            'label' => 'label_generator.output_format.label',
+            'choice_label' => static fn(LabelOutputFormat $format): string => match ($format) {
+                LabelOutputFormat::PDF => 'label_generator.output_format.pdf',
+                LabelOutputFormat::LABELLE => 'label_generator.output_format.labelle',
+            },
         ]);
         $builder->add('options', LabelOptionsType::class, [
             'label' => false,

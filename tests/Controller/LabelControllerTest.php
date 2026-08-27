@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Entity\LabelSystem\LabelOutputFormat;
+use App\Entity\LabelSystem\LabelProfile;
 use App\Entity\UserSystem\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -49,6 +51,22 @@ final class LabelControllerTest extends WebTestCase
 
         $form = $crawler->filter('button[name="label_dialog[update]"]')->form();
         self::assertSame('pdf', $form['label_dialog[output_format]']->getValue());
+    }
+
+    public function testProfilePreselectsItsOutputFormat(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $profile = $entityManager->getRepository(LabelProfile::class)->findOneBy([]);
+        self::assertInstanceOf(LabelProfile::class, $profile);
+        $profile->setOutputFormat(LabelOutputFormat::LABELLE);
+        $entityManager->flush();
+
+        $crawler = $client->request('GET', '/en/label/'.$profile->getID().'/dialog');
+        self::assertResponseIsSuccessful();
+
+        $form = $crawler->filter('button[name="label_dialog[update]"]')->form();
+        self::assertSame('labelle', $form['label_dialog[output_format]']->getValue());
     }
 
     private function createAuthenticatedClient(): KernelBrowser

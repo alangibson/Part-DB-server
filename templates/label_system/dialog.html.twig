@@ -28,14 +28,19 @@
         </li>
     </ul>
 
-    <div class="tab-content mt-2">
+    <div class="tab-content mt-2" {{ stimulus_controller('pages/label_output_format', {
+        dymoFormat: 'labelle'
+    }) }}>
 
         <div class="tab-pane active" id="common" role="tabpanel" aria-labelledby="common-tab">
             {{ form_row(form.target_id) }}
-            {{ form_row(form.output_format) }}
+            {{ form_row(form.output_format, {'attr': {
+                'data-pages--label-output-format-target': 'format',
+                'data-action': 'change->pages--label-output-format#update'
+            }}) }}
 
             {{ form_row(form.options.supported_element) }}
-            <div class="mb-2 row">
+            <div class="mb-2 row" data-pages--label-output-format-target="labelSize">
                 {{ form_label(form.options.width) }}
                 <div class="{{ col_input }}">
                     <div class="input-group">
