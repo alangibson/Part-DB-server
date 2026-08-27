@@ -7,6 +7,7 @@ function input(value = '') {
     return {
         value,
         readOnly: false,
+        dataset: {},
         attributes: {},
         classList: { toggle: (name, enabled) => enabled ? classes.add(name) : classes.delete(name) },
         setAttribute(name, attributeValue) { this.attributes[name] = attributeValue; },
@@ -30,6 +31,21 @@ test('copies dimensions using the select value even when selectedOptions is stal
 
     assert.equal(width.value, '69');
     assert.equal(height.value, '49');
+    assert.equal(width.readOnly, true);
+    assert.equal(height.readOnly, true);
+    assert.equal(width.hasClass('bg-body-secondary'), true);
+});
+
+test('does not make DYMO dimensions editable when Default sheet is selected', () => {
+    const select = { value: '', options: [{ value: '', dataset: {} }] };
+    const width = input('40');
+    const height = input('20');
+    width.dataset.dymoReadOnly = 'true';
+    height.dataset.dymoReadOnly = 'true';
+    const labelSize = { querySelectorAll: () => [width, height] };
+
+    synchronizeLabelProfileSheet(select, width, height, labelSize);
+
     assert.equal(width.readOnly, true);
     assert.equal(height.readOnly, true);
     assert.equal(width.hasClass('bg-body-secondary'), true);

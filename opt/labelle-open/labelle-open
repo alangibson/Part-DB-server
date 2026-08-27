@@ -1,0 +1,52 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: labelle-open FILE.labelle" >&2
+    exit 2
+fi
+
+if [ ! -f "$1" ]; then
+    echo "labelle-open: file not found: $1" >&2
+    exit 1
+fi
+
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+
+if ! command -v labelle >/dev/null 2>&1; then
+    echo "labelle-open: labelle is not installed or not in PATH" >&2
+    exit 127
+fi
+
+ERROR_FILE=$(mktemp)
+trap 'rm -f "$ERROR_FILE"' EXIT HUP INT TERM
+
+STATUS=0
+labelle --batch < "$1" 2>"$ERROR_FILE" || STATUS=$?
+
+ERROR_MESSAGE=$(tail -n 10 "$ERROR_FILE")
+
+# Labelle currently prints errors such as "Error: No supported devices found"
+# to stderr but exits successfully, so its exit status alone is insufficient.
+if [ "$STATUS" -eq 0 ]; then
+    if grep -q 'Error:' "$ERROR_FILE"; then
+        STATUS=1
+    else
+        exit 0
+    fi
+fi
+
+if [ -z "$ERROR_MESSAGE" ]; then
+    ERROR_MESSAGE="Labelle exited with status $STATUS"
+fi
+
+logger -t labelle-open -- "$ERROR_MESSAGE" || true
+NOTIFICATION_MESSAGE=$(printf '%s\n\n%s' \
+    "$ERROR_MESSAGE" \
+    "Ensure DYMO printer is connected and powered on")
+notify-send --urgency=critical \
+    "Labelle printing failed" \
+    "$NOTIFICATION_MESSAGE" || true
+
+exit "$STATUS"

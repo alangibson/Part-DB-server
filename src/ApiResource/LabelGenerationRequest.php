@@ -30,27 +30,28 @@ use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
 use ApiPlatform\OpenApi\Model\Response;
 use App\Entity\LabelSystem\LabelSupportedElement;
+use App\Entity\LabelSystem\LabelOutputFormat;
 use App\State\LabelGenerationProcessor;
 use App\Validator\Constraints\Misc\ValidRange;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * API Resource for generating PDF labels for parts, part lots, or storage locations.
+ * API Resource for generating label output files for parts, part lots, or storage locations.
  * This endpoint allows generating labels using saved label profiles.
  */
 #[ApiResource(
     uriTemplate: '/labels/generate',
-    description: 'Generate PDF labels for parts, part lots, or storage locations using label profiles.',
+    description: 'Generate PDF or Labelle batch files for parts, part lots, or storage locations using label profiles.',
     operations: [
         new Post(
             inputFormats: ['json' => ['application/json']],
             outputFormats: [],
             openapi: new Operation(
                 responses: [
-                    "200" => new Response(description: "PDF file containing the generated labels"),
+                    "200" => new Response(description: "Generated PDF or Labelle batch file"),
                 ],
-                summary: 'Generate PDF labels',
-                description: 'Generate PDF labels for one or more elements using a label profile. Returns a PDF file.',
+                summary: 'Generate label output',
+                description: 'Generate a PDF or Labelle batch file using a label profile. PDF is the default output format.',
                 requestBody: new RequestBody(
                     description: 'Label generation request',
                     required: true,
@@ -89,4 +90,9 @@ class LabelGenerationRequest
     /** One-based position of the first label on the first sheet. Ignored for single-label output. */
     #[Assert\Positive]
     public int $startSlot = 1;
+
+    /**
+     * Optional output format. Defaults to PDF for backwards compatibility.
+     */
+    public ?LabelOutputFormat $outputFormat = null;
 }

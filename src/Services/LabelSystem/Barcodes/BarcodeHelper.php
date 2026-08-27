@@ -67,9 +67,12 @@ class BarcodeHelper
     {
         $svg = $this->barcodeAsSVG($content, $type);
         $base64 = $this->dataUri($svg, 'image/svg+xml');
-        $alt_text ??= htmlspecialchars($content);
+        $alt_text ??= $content;
 
-        return '<img src="'.$base64.'" width="'.$width.'" style="min-height: 25px;" alt="'.$alt_text.'"/>';
+        $escaped_content = htmlspecialchars($content, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $escaped_alt_text = htmlspecialchars($alt_text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        return '<img src="'.$base64.'" width="'.$width.'" style="min-height: 25px;" alt="'.$escaped_alt_text.'" data-label-code-type="'.$type->value.'" data-label-code-content="'.$escaped_content.'"/>';
     }
 
     /**

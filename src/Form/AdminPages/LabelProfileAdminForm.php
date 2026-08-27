@@ -42,11 +42,13 @@ declare(strict_types=1);
 namespace App\Form\AdminPages;
 
 use App\Entity\Base\AbstractNamedDBElement;
+use App\Entity\LabelSystem\LabelOutputFormat;
 use App\Entity\LabelSystem\LabelProfile;
 use App\Entity\LabelSystem\LabelSheet;
 use App\Form\LabelOptionsType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -82,6 +84,14 @@ class LabelProfileAdminForm extends BaseEntityAdminForm
                 'data-action' => 'change->pages--label-profile-sheet#toggle',
                 'data-pages--label-profile-sheet-target' => 'sheet',
             ],
+        ]);
+        $builder->add('output_format', EnumType::class, [
+            'class' => LabelOutputFormat::class,
+            'label' => 'label_generator.output_format.label',
+            'choice_label' => static fn(LabelOutputFormat $format): string => match ($format) {
+                LabelOutputFormat::PDF => 'label_generator.output_format.pdf',
+                LabelOutputFormat::LABELLE => 'label_generator.output_format.labelle',
+            },
         ]);
         $builder->add('options', LabelOptionsType::class, [
             'label' => false,

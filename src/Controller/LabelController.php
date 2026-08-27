@@ -43,14 +43,16 @@ namespace App\Controller;
 
 use App\Entity\Base\AbstractDBElement;
 use App\Entity\LabelSystem\LabelOptions;
+use App\Entity\LabelSystem\LabelOutputFormat;
 use App\Entity\LabelSystem\LabelProcessMode;
 use App\Entity\LabelSystem\LabelProfile;
 use App\Entity\LabelSystem\LabelSupportedElement;
 use App\Exceptions\TwigModeException;
+use App\Exceptions\LabelleConversionException;
 use App\Form\LabelSystem\LabelDialogType;
 use App\Repository\DBElementRepository;
 use App\Services\ElementTypeNameGenerator;
-use App\Services\LabelSystem\LabelGenerator;
+use App\Services\LabelSystem\Output\LabelOutputManager;
 use App\Services\Misc\RangeParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,7 +66,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route(path: '/label')]
 class LabelController extends AbstractController
 {
-    public function __construct(protected LabelGenerator $labelGenerator, protected EntityManagerInterface $em, protected ElementTypeNameGenerator $elementTypeNameGenerator, protected RangeParser $rangeParser, protected TranslatorInterface $translator,
+    public function __construct(protected LabelOutputManager $labelOutputManager, protected EntityManagerInterface $em, protected ElementTypeNameGenerator $elementTypeNameGenerator, protected RangeParser $rangeParser, protected TranslatorInterface $translator,
         private readonly ValidatorInterface $validator
     )
     {
@@ -88,7 +90,8 @@ class LabelController extends AbstractController
 
         $form = $this->createForm(LabelDialogType::class, null, [
             'disable_options' => $disable_options,
-            'profile' => $profile
+            'profile' => $profile,
+            'output_format' => $profile?->getOutputFormat() ?? LabelOutputFormat::PDF,
         ]);
 
         //Try to parse given target_type and target_id
@@ -108,8 +111,12 @@ class LabelController extends AbstractController
 
         /** @var LabelOptions $form_options */
         $form_options = $form['options']->getData();
+        /** @var LabelOutputFormat $form_output_format */
+        $form_output_format = $form->get('output_format')->getData();
 
         $pdf_data = null;
+        $labelle_data = null;
+        $labelle_warnings = [];
         $filename = 'invalid.pdf';
 
         if (($form->isSubmitted() && $form->isValid()) || ($generate && !$form->isSubmitted() && $profile instanceof LabelProfile)) {
@@ -128,6 +135,7 @@ class LabelController extends AbstractController
                 $new_profile->setName($form->get('save_profile_name')->getData());
                 $new_profile->setOptions($form_options);
                 $new_profile->setLabelSheet($profile?->getLabelSheet());
+                $new_profile->setOutputFormat($form_output_format);
 
                 //Validate the profile name
                 $errors = $this->validator->validate($new_profile);
@@ -155,6 +163,7 @@ class LabelController extends AbstractController
                 && $this->isGranted('edit', $profile)) {
                 //Update the profile options
                 $profile->setOptions($form_options);
+                $profile->setOutputFormat($form_output_format);
 
                 //Validate the profile name
                 $errors = $this->validator->validate($profile);
@@ -185,15 +194,27 @@ class LabelController extends AbstractController
 
             if ($targets !== []) {
                 try {
-                    $pdf_data = $this->labelGenerator->generateLabel(
+                    $generated_file = $this->labelOutputManager->generate(
+                        $form_output_format,
                         $form_options,
                         $targets,
+                        $this->getLabelNameBase($targets[0], $profile),
                         (int) $form->get('copies')->getData(),
                         (int) $form->get('start_slot')->getData(),
                     );
-                    $filename = $this->getLabelName($targets[0], $profile);
+                    $filename = $generated_file->filename;
+                    if ($form_output_format === LabelOutputFormat::PDF) {
+                        $pdf_data = $generated_file->content;
+                    } else {
+                        $labelle_data = $generated_file->content;
+                        $labelle_warnings = $generated_file->warnings;
+                    }
                 } catch (TwigModeException $exception) {
                     $form->get('options')->get('lines')->addError(new FormError($exception->getSafeMessage()));
+                } catch (LabelleConversionException $exception) {
+                    foreach ($exception->getErrors() as $error) {
+                        $form->get('output_format')->addError(new FormError($error));
+                    }
                 } catch (\InvalidArgumentException $exception) {
                     $form->get('options')->addError(new FormError($exception->getMessage()));
                 }
@@ -214,17 +235,19 @@ class LabelController extends AbstractController
         return $this->render('label_system/dialog.html.twig', [
             'form' => $form,
             'pdf_data' => $pdf_data,
+            'labelle_data' => $labelle_data,
+            'labelle_warnings' => $labelle_warnings,
             'filename' => $filename,
             'profile' => $profile,
         ]);
     }
 
-    protected function getLabelName(AbstractDBElement $element, ?LabelProfile $profile = null): string
+    protected function getLabelNameBase(AbstractDBElement $element, ?LabelProfile $profile = null): string
     {
         $ret = 'label_'.$this->elementTypeNameGenerator->getLocalizedTypeLabel($element);
         $ret .= $element->getID();
 
-        return $ret.'.pdf';
+        return $ret;
     }
 
     protected function findObjects(LabelSupportedElement $type, string $ids): array

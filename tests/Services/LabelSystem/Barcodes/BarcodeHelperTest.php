@@ -43,6 +43,8 @@ final class BarcodeHelperTest extends WebTestCase
         $html = $this->service->barcodeAsHTML('Test', BarcodeType::QR);
         $this->assertStringStartsWith('<img', $html);
         $this->assertStringContainsString('alt="Test"', $html);
+        $this->assertStringContainsString('data-label-code-type="qr"', $html);
+        $this->assertStringContainsString('data-label-code-content="Test"', $html);
     }
 
     public function testBarcodeAsSVG(): void

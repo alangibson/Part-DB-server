@@ -114,6 +114,38 @@ class LabelEndpointTest extends AuthenticatedApiTestCase
         self::assertStringStartsWith('%PDF-', $response->getContent());
     }
 
+    public function testGenerateLabelleFile(): void
+    {
+        $response = self::createAuthenticatedClient()->request('POST', '/api/labels/generate', [
+            'json' => [
+                'profileId' => 1,
+                'elementIds' => '1',
+                'outputFormat' => 'labelle',
+            ],
+        ]);
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('content-type', 'text/plain; charset=UTF-8');
+        self::assertStringStartsWith("LABELLE-LABEL-SPEC-VERSION:1\n", $response->getContent());
+        self::assertStringContainsString('.labelle', $response->getHeaders()['content-disposition'][0]);
+    }
+
+    public function testGenerateLabelleFileCombinesMultipleElements(): void
+    {
+        $response = self::createAuthenticatedClient()->request('POST', '/api/labels/generate', [
+            'json' => [
+                'profileId' => 1,
+                'elementIds' => '1,2',
+                'outputFormat' => 'labelle',
+            ],
+        ]);
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('content-type', 'text/plain; charset=UTF-8');
+        self::assertSame(1, substr_count($response->getContent(), 'LABELLE-LABEL-SPEC-VERSION:1'));
+        self::assertStringContainsString("TEXT:   \n", $response->getContent());
+    }
+
     public function testGenerateLabelPdfWithRange(): void
     {
         $response = self::createAuthenticatedClient()->request('POST', '/api/labels/generate', [

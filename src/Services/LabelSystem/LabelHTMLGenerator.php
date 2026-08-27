@@ -71,6 +71,52 @@ final class LabelHTMLGenerator
             throw new InvalidArgumentException('$elements must not be empty');
         }
 
+        $twig_elements = $this->getRenderedElements($options, $elements, $copies);
+
+        $sheetPages = [];
+        $capacity = $options->getSheetCapacity();
+        $offset = $startSlot - 1;
+        $remaining = $twig_elements;
+        do {
+            $page = [];
+            while ($offset < $capacity && $remaining !== []) {
+                $label = array_shift($remaining);
+                $column = $offset % $options->getSheetColumns();
+                $row = intdiv($offset, $options->getSheetColumns());
+                $label['left'] = $options->getSheetMarginLeft()
+                    + $column * ($options->getWidth() + $options->getSheetGutterWidth());
+                $label['top'] = $options->getSheetMarginTop()
+                    + $row * ($options->getHeight() + $options->getSheetGutterHeight());
+                $page[] = $label;
+                ++$offset;
+            }
+            $sheetPages[] = $page;
+            $offset = 0;
+        } while ($remaining !== []);
+
+        return $this->twig->render('label_system/labels/base_label.html.twig', [
+            'meta_title' => $this->getPDFTitle($options, $elements[0]),
+            'elements' => $twig_elements,
+            'options' => $options,
+            'sheet_pages' => $sheetPages,
+        ]);
+    }
+
+    /**
+     * Render placeholders or Twig for each label target without wrapping the result in a PDF page.
+     *
+     * @param object[] $elements
+     * @return array<int, array{element: object, lines: string, barcode: ?string, barcode_content: ?string}>
+     */
+    public function getRenderedElements(LabelOptions $options, array $elements, int $copies = 1): array
+    {
+        if ($elements === []) {
+            throw new InvalidArgumentException('$elements must not be empty');
+        }
+        if ($copies < 1) {
+            throw new InvalidArgumentException('The number of copies must be at least one.');
+        }
+
         $twig_elements = [];
 
         if (LabelProcessMode::TWIG === $options->getProcessMode()) {
@@ -115,33 +161,7 @@ final class LabelHTMLGenerator
             ++$page;
         }
 
-        $sheetPages = [];
-        $capacity = $options->getSheetCapacity();
-        $offset = $startSlot - 1;
-        $remaining = $twig_elements;
-        do {
-            $page = [];
-            while ($offset < $capacity && $remaining !== []) {
-                $label = array_shift($remaining);
-                $column = $offset % $options->getSheetColumns();
-                $row = intdiv($offset, $options->getSheetColumns());
-                $label['left'] = $options->getSheetMarginLeft()
-                    + $column * ($options->getWidth() + $options->getSheetGutterWidth());
-                $label['top'] = $options->getSheetMarginTop()
-                    + $row * ($options->getHeight() + $options->getSheetGutterHeight());
-                $page[] = $label;
-                ++$offset;
-            }
-            $sheetPages[] = $page;
-            $offset = 0;
-        } while ($remaining !== []);
-
-        return $this->twig->render('label_system/labels/base_label.html.twig', [
-            'meta_title' => $this->getPDFTitle($options, $elements[0]),
-            'elements' => $twig_elements,
-            'options' => $options,
-            'sheet_pages' => $sheetPages,
-        ]);
+        return $twig_elements;
     }
 
     private function getPDFTitle(LabelOptions $options, object $element): string

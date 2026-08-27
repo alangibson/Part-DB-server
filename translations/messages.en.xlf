@@ -14432,5 +14432,44 @@ Buerklin-API Authentication server:
     <unit id="label_profile_sheet_placeholder" name="label_profile.sheet.placeholder"><segment state="translated"><source>label_profile.sheet.placeholder</source><target>Select a Label Sheet</target></segment></unit>
     <unit id="label_profile_sheet_default" name="label_profile.sheet.default"><segment state="translated"><source>label_profile.sheet.default</source><target>Default</target></segment></unit>
     <unit id="label_sheet_delete_in_use" name="label_sheet.delete.in_use"><segment state="translated"><source>label_sheet.delete.in_use</source><target>This Label Sheet cannot be deleted because it is used by one or more Label Profiles.</target></segment></unit>
+    <unit id="DymoOutputFormat" name="label_generator.output_format.label">
+      <segment state="translated">
+        <source>label_generator.output_format.label</source>
+        <target>File type</target>
+      </segment>
+    </unit>
+    <unit id="DymoOutputPdf" name="label_generator.output_format.pdf">
+      <segment state="translated">
+        <source>label_generator.output_format.pdf</source>
+        <target>PDF</target>
+      </segment>
+    </unit>
+    <unit id="DymoOutputLabelle" name="label_generator.output_format.labelle">
+      <segment state="translated">
+        <source>label_generator.output_format.labelle</source>
+        <target>DYMO / Labelle batch file</target>
+      </segment>
+    </unit>
+    <unit id="DymoDownloadLabelle" name="label_generator.download_labelle">
+      <segment state="translated">
+        <source>label_generator.download_labelle</source>
+        <target>Download Labelle file</target>
+      </segment>
+    </unit>
+    <unit id="LabelleErrParse" name="labelle.error.parse_html"><segment state="translated"><source>labelle.error.parse_html</source><target>The label HTML could not be parsed.</target></segment></unit>
+    <unit id="LabelleErrEmpty" name="labelle.error.no_content"><segment state="translated"><source>labelle.error.no_content</source><target>The label does not contain any content that Labelle can print.</target></segment></unit>
+    <unit id="LabelleErrNestedContent" name="labelle.error.nested_content_table"><segment state="translated"><source>labelle.error.nested_content_table</source><target>A table nested inside another content block cannot be converted to Labelle.</target></segment></unit>
+    <unit id="LabelleErrNested" name="labelle.error.nested_table"><segment state="translated"><source>labelle.error.nested_table</source><target>Nested tables cannot be converted to Labelle.</target></segment></unit>
+    <unit id="LabelleErrTableVisual" name="labelle.error.table_visual"><segment state="translated"><source>labelle.error.table_visual</source><target>Barcodes and images inside layout-table cells cannot be represented reliably by Labelle.</target></segment></unit>
+    <unit id="LabelleErrBarcode" name="labelle.error.unsupported_barcode"><segment state="translated"><source>labelle.error.unsupported_barcode</source><target>Barcode type %type% is not supported by Labelle batch export.</target></segment></unit>
+    <unit id="LabelleErrImage" name="labelle.error.image_no_alt"><segment state="translated"><source>labelle.error.image_no_alt</source><target>An image without alternative text cannot be represented in a Labelle batch file.</target></segment></unit>
+    <unit id="LabelleErrMultiline" name="labelle.error.multiline_code"><segment state="translated"><source>labelle.error.multiline_code</source><target>Multiline barcode and QR content cannot be safely serialized.</target></segment></unit>
+    <unit id="LabelleErrLinebreak" name="labelle.error.unexpected_linebreak"><segment state="translated"><source>labelle.error.unexpected_linebreak</source><target>A Labelle command value unexpectedly contained a line break.</target></segment></unit>
+    <unit id="LabelleErrControl" name="labelle.error.control_chars"><segment state="translated"><source>labelle.error.control_chars</source><target>The label contains control characters that cannot be written to a Labelle file.</target></segment></unit>
+    <unit id="LabelleWarnRich" name="labelle.warning.rich_text"><segment state="translated"><source>labelle.warning.rich_text</source><target>Rich-text formatting and CSS are not represented in Labelle batch files.</target></segment></unit>
+    <unit id="LabelleWarnMerge" name="labelle.warning.merged_cells"><segment state="translated"><source>labelle.warning.merged_cells</source><target>Merged table cells are approximated in the Labelle output.</target></segment></unit>
+    <unit id="LabelleWarnTable" name="labelle.warning.table_style"><segment state="translated"><source>labelle.warning.table_style</source><target>Table widths, borders, and alignment are not represented in Labelle batch files.</target></segment></unit>
+    <unit id="LabelleWarnImage" name="labelle.warning.image_alt"><segment state="translated"><source>labelle.warning.image_alt</source><target>An image was replaced by its alternative text.</target></segment></unit>
+    <unit id="LabelleWarnCss" name="labelle.warning.additional_css"><segment state="translated"><source>labelle.warning.additional_css</source><target>Additional label CSS is not represented in Labelle batch files.</target></segment></unit>
   </file>
 </xliff>

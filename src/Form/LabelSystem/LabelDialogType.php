@@ -41,11 +41,13 @@ declare(strict_types=1);
 
 namespace App\Form\LabelSystem;
 
+use App\Entity\LabelSystem\LabelOutputFormat;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Form\LabelOptionsType;
 use App\Validator\Constraints\Misc\ValidRange;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -80,6 +82,15 @@ class LabelDialogType extends AbstractType
             'data' => 1,
             'constraints' => [new \Symfony\Component\Validator\Constraints\Positive()],
             'attr' => ['min' => 1],
+        ]);
+        $builder->add('output_format', EnumType::class, [
+            'class' => LabelOutputFormat::class,
+            'data' => $options['output_format'],
+            'label' => 'label_generator.output_format.label',
+            'choice_label' => static fn(LabelOutputFormat $format): string => match ($format) {
+                LabelOutputFormat::PDF => 'label_generator.output_format.pdf',
+                LabelOutputFormat::LABELLE => 'label_generator.output_format.labelle',
+            },
         ]);
 
         $builder->add('options', LabelOptionsType::class, [
@@ -123,5 +134,7 @@ class LabelDialogType extends AbstractType
         $resolver->setDefault('mapped', false);
         $resolver->setDefault('disable_options', false);
         $resolver->setDefault('profile', null);
+        $resolver->setDefault('output_format', LabelOutputFormat::PDF);
+        $resolver->setAllowedTypes('output_format', LabelOutputFormat::class);
     }
 }

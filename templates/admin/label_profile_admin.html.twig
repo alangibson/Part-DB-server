@@ -25,28 +25,34 @@
 {% block comment %}{% endblock %}
 
 {% block additional_controls %}
-    <div {{ stimulus_controller('pages/label_profile_sheet') }}>
-    {{ form_row(form.show_in_dropdown) }}
-    {{ form_row(form.label_sheet) }}
-    <div {{ stimulus_target('pages/label_profile_sheet', 'labelSize') }}>
-        <div class="mb-2 row">
-            {{ form_label(form.options.width) }}
-            <div class="{{ col_input }}">
-                <div class="input-group">
-                    {{ form_widget(form.options.width) }}
-                    <span class="input-group-text">x</span>
-                    {{ form_widget(form.options.height) }}
-                    <span class="input-group-text">mm</span>
+    <div {{ stimulus_controller('pages/label_output_format', {dymoFormat: 'labelle'}) }}>
+        {{ form_row(form.show_in_dropdown) }}
+        {{ form_row(form.output_format, {'attr': {
+            'data-pages--label-output-format-target': 'format',
+            'data-action': 'change->pages--label-output-format#update'
+        }}) }}
+        <div {{ stimulus_controller('pages/label_profile_sheet') }}>
+            {{ form_row(form.label_sheet) }}
+            {{ form_row(form.options.supported_element) }}
+            <div data-pages--label-output-format-target="labelSize" {{ stimulus_target('pages/label_profile_sheet', 'labelSize') }}>
+                <div class="mb-2 row">
+                    {{ form_label(form.options.width) }}
+                    <div class="{{ col_input }}">
+                        <div class="input-group">
+                            {{ form_widget(form.options.width) }}
+                            <span class="input-group-text">x</span>
+                            {{ form_widget(form.options.height) }}
+                            <span class="input-group-text">mm</span>
+                        </div>
+                        {{ form_errors(form.options.width) }}
+                        {{ form_errors(form.options.height) }}
+                    </div>
                 </div>
-                {{ form_errors(form.options.width) }}
-                {{ form_errors(form.options.height) }}
             </div>
+            {{ form_row(form.options.barcode_type) }}
+            {{ form_row(form.options.lines) }}
         </div>
     </div>
-    </div>
-    {{ form_row(form.options.supported_element) }}
-    {{ form_row(form.options.barcode_type) }}
-    {{ form_row(form.options.lines) }}
 {% endblock %}
 
 {% block additional_content %}

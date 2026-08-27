@@ -8,9 +8,12 @@ export function synchronizeLabelProfileSheet(select, labelWidth, labelHeight, la
     }
 
     labelSize.querySelectorAll('input').forEach((input) => {
-        input.readOnly = readOnly;
-        input.classList.toggle('bg-body-secondary', readOnly);
-        input.setAttribute('aria-readonly', readOnly ? 'true' : 'false');
+        input.dataset ??= {};
+        input.dataset.labelSheetReadOnly = readOnly.toString();
+        const combinedReadOnly = readOnly || input.dataset.dymoReadOnly === 'true';
+        input.readOnly = combinedReadOnly;
+        input.classList.toggle('bg-body-secondary', combinedReadOnly);
+        input.setAttribute('aria-readonly', combinedReadOnly.toString());
     });
 }
 

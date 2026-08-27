@@ -28,13 +28,19 @@
         </li>
     </ul>
 
-    <div class="tab-content mt-2">
+    <div class="tab-content mt-2" {{ stimulus_controller('pages/label_output_format', {
+        dymoFormat: 'labelle'
+    }) }}>
 
         <div class="tab-pane active" id="common" role="tabpanel" aria-labelledby="common-tab">
             {{ form_row(form.target_id) }}
+            {{ form_row(form.output_format, {'attr': {
+                'data-pages--label-output-format-target': 'format',
+                'data-action': 'change->pages--label-output-format#update'
+            }}) }}
 
             {{ form_row(form.options.supported_element) }}
-            <div class="mb-2 row">
+            <div class="mb-2 row" data-pages--label-output-format-target="labelSize">
                 {{ form_label(form.options.width) }}
                 <div class="{{ col_input }}">
                     <div class="input-group">
@@ -129,6 +135,26 @@
             <div class="{{ col_input }} {{ offset_label }}">
                 <a data-turbo="false" class="btn btn-secondary" href="#" {{ stimulus_controller('pages/label_download_btn')}} {{ stimulus_action('pages/label_download_btn', 'download')}} download="{{ filename ?? '' }}">
                     {% trans %}label_generator.download{% endtrans %}
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    {% if labelle_data %}
+        <div class="row">
+            <div class="{{ col_input }} {{ offset_label }}">
+                {% if labelle_warnings is not empty %}
+                    <div class="alert alert-warning" role="alert">
+                        <ul class="mb-0">
+                            {% for warning in labelle_warnings %}
+                                <li>{{ warning }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <a data-turbo="false" class="btn btn-secondary"
+                   href="{{ labelle_data | data_uri(mime='text/plain') }}"
+                   download="{{ filename ?? 'label.labelle' }}">
+                    {% trans %}label_generator.download_labelle{% endtrans %}
                 </a>
             </div>
         </div>
