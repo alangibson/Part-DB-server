@@ -46,6 +46,7 @@ add( "de", {
     'IPN as QR code': 'IPN als QR Code',
     'IPN as Code 128 barcode': 'IPN als Code 128 Barcode',
     'IPN as Code 39 barcode': 'IPN als Code 39 Barcode',
+    'Param object by name': 'Parameterobjekt nach Name',
 
     'Lot ID': 'Lot ID',
     'Lot name': 'Lot Name',

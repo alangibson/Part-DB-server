@@ -107,6 +107,7 @@ final class LabelTextReplacer
             '/(\[\[RESISTOR_[45]_BAND\(.*?\)\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
             '/(\[\[[A-Z_0-9]+\]\])/' => fn($match): string => $this->handlePlaceholder($match[0], $target),
             '/(\[\[(?:(?:part|storage_location)\.)?parameters\[\s*([\'\"])(?:\\\\.|(?!\2).)*\2\s*\]\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
+            '/(\[\[(?:(?:part|storage_location)\.)?param\[\s*([\'\"])(?:\\\\.|(?!\2).)*\2\s*\]\.[a-z_]+\]\])/i' => fn($match): string => $this->handlePlaceholder($match[0], $target),
         ];
 
         return preg_replace_callback_array($patterns, $lines) ?? throw new \RuntimeException('Could not replace placeholders!');
