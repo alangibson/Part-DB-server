@@ -24,6 +24,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 final class LabelleBatchConverter
 {
+    private const HEADER = 'LABELLE-LABEL-SPEC-VERSION:1';
+
+    private const LABEL_SEPARATOR = 'TEXT:   ';
+
     public function __construct(private readonly TranslatorInterface $translator)
     {
     }
@@ -91,7 +95,7 @@ final class LabelleBatchConverter
             throw new LabelleConversionException($this->errors);
         }
 
-        $lines = ['LABELLE-LABEL-SPEC-VERSION:1'];
+        $lines = [self::HEADER];
         foreach ($blocks as $block) {
             if ($block['type'] === 'text') {
                 $textLines = $block['lines'];
@@ -115,6 +119,32 @@ final class LabelleBatchConverter
         }
 
         return new LabelleConversionResult(implode("\n", $lines)."\n", $this->warnings);
+    }
+
+    /**
+     * Combines independently converted label contents into one continuous Labelle label.
+     *
+     * @param list<LabelleConversionResult> $conversions
+     */
+    public function combine(array $conversions): LabelleConversionResult
+    {
+        if ($conversions === []) {
+            throw new \InvalidArgumentException('$conversions must not be empty');
+        }
+
+        $prefix = self::HEADER."\n";
+        $bodies = [];
+        $warnings = [];
+
+        foreach ($conversions as $conversion) {
+            $bodies[] = substr($conversion->batch, strlen($prefix));
+            array_push($warnings, ...$conversion->warnings);
+        }
+
+        return new LabelleConversionResult(
+            $prefix.implode(self::LABEL_SEPARATOR."\n", $bodies),
+            array_values(array_unique($warnings)),
+        );
     }
 
     /**

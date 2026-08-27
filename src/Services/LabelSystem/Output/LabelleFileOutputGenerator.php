@@ -17,7 +17,6 @@ namespace App\Services\LabelSystem\Output;
 
 use App\Entity\LabelSystem\LabelOptions;
 use App\Entity\LabelSystem\LabelOutputFormat;
-use App\Exceptions\LabelleConversionException;
 use App\Services\LabelSystem\LabelHTMLGenerator;
 use App\Services\LabelSystem\Labelle\LabelleBatchConverter;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -38,16 +37,15 @@ final readonly class LabelleFileOutputGenerator implements LabelOutputGeneratorI
 
     public function generate(LabelOptions $options, array $elements, string $filenameBase): GeneratedLabelFile
     {
-        if (count($elements) !== 1) {
-            throw new LabelleConversionException([$this->translator->trans('labelle.error.one_target')]);
+        $conversions = [];
+        foreach ($this->htmlGenerator->getRenderedElements($options, $elements) as $rendered) {
+            $conversions[] = $this->converter->convert(
+                $rendered['lines'],
+                $options->getBarcodeType(),
+                $rendered['barcode_content'],
+            );
         }
-
-        $rendered = $this->htmlGenerator->getRenderedElements($options, $elements)[0];
-        $conversion = $this->converter->convert(
-            $rendered['lines'],
-            $options->getBarcodeType(),
-            $rendered['barcode_content'],
-        );
+        $conversion = $this->converter->combine($conversions);
 
         $warnings = $conversion->warnings;
         if (trim($options->getAdditionalCss()) !== '') {

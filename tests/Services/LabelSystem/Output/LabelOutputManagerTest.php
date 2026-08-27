@@ -19,7 +19,6 @@ use App\Entity\LabelSystem\LabelOptions;
 use App\Entity\LabelSystem\LabelOutputFormat;
 use App\Entity\LabelSystem\LabelSupportedElement;
 use App\Entity\Parts\Part;
-use App\Exceptions\LabelleConversionException;
 use App\Services\LabelSystem\Output\LabelOutputManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -61,13 +60,17 @@ final class LabelOutputManagerTest extends KernelTestCase
         self::assertStringStartsWith('%PDF-', $file->content);
     }
 
-    public function testLabelleRejectsMultipleTargets(): void
+    public function testLabelleCombinesMultipleTargetsWithSpacing(): void
     {
         $options = new LabelOptions();
         $options->setSupportedElement(LabelSupportedElement::PART);
         $options->setLines('<p>Test</p>');
 
-        $this->expectException(LabelleConversionException::class);
-        $this->manager->generate(LabelOutputFormat::LABELLE, $options, [new Part(), new Part()], 'labels');
+        $file = $this->manager->generate(LabelOutputFormat::LABELLE, $options, [new Part(), new Part()], 'labels');
+
+        self::assertSame(
+            "LABELLE-LABEL-SPEC-VERSION:1\nTEXT:Test\nTEXT:   \nTEXT:Test\n",
+            $file->content,
+        );
     }
 }

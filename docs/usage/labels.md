@@ -263,9 +263,10 @@ certain data:
 
 ## Labelle batch files
 
-The **Label output format** setting normally produces a PDF. Selecting **DYMO / Labelle batch file** instead downloads
+The **File type** setting normally produces a PDF. Selecting **DYMO / Labelle batch file** instead downloads
 a UTF-8 `.labelle` file containing [Labelle batch-mode](https://github.com/labelle-org/labelle#more-control-with-batch-mode)
-input. A Labelle file contains exactly one label, so only one target ID can be selected for this output format.
+input. When multiple target IDs are selected, their label contents are placed consecutively in the same file with space
+between them. Labelle prints these as one continuous label that can be cut into the individual part labels.
 
 Part-DB does not send this file to a printer or run Labelle. Install and configure Labelle on the computer connected to
 the printer, then print the downloaded file with a command such as:
